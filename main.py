@@ -68,6 +68,9 @@ class App(ar.Window):  # Собственно окно игры
         # цикл обработки, вызывается +- 60 раз в секунду
         self.events_update()  # обрабатываем события
         self.player_physics.update()  # обновляем физику
+        # обновляем все спрайты
+        self.player_list.update(delta_time)
+        self.wall_list.update(delta_time)
 
         # проверяем, не нужно ли сделать автосэйв
         if self.data_timer <= 0:
