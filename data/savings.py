@@ -7,7 +7,8 @@ data_folder = os.path.dirname(__file__)
 class Data:  # класс, читающий и записывающий данные
     FILES = {
         'player': data_folder + '/player.png',
-        'wall': data_folder + '/wall.png'
+        'wall': data_folder + '/wall.png',
+        'data': data_folder + '/data.game'
     }
 
     def __init__(self) -> None:
