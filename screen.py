@@ -1,8 +1,6 @@
 import arcade as ar
 from data.savings import data
 
-x1, x2, y1, y2 = -1, -1, -1, -1
-w1, w2, h1, h2 = 0, 0, 0, 0
 W, H = ar.get_display_size()
 CELL_SIDE = min(H // 22, W // 40)
 WIDTH = CELL_SIDE * 40
