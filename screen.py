@@ -2,9 +2,9 @@ import arcade as ar
 from data.savings import data
 
 W, H = ar.get_display_size()
-CELL_SIDE = min(H // 22, W // 40)
-WIDTH = CELL_SIDE * 40
-HEIGHT = CELL_SIDE * 22
+CELL_SIDE = min(H // 27, W // 48)
+WIDTH = CELL_SIDE * 48
+HEIGHT = CELL_SIDE * 27
 W_OUTLINE = W - WIDTH
 H_OUTLINE = H - HEIGHT
 
@@ -28,3 +28,7 @@ def get_screen_size() -> tuple[int, int]:  # размер экрана
 
 def cell_pos(r: int, c: int) -> tuple[int, int]:  # координаты левого верхнего угла клетки по ряду и колонке
     return c * CELL_SIDE + W_OUTLINE, r * CELL_SIDE + H_OUTLINE
+
+def cell_center(r: int, c: int) -> tuple[int, int]:
+    x, y = cell_pos(r, c)
+    return x + CELL_SIDE / 2, y + CELL_SIDE / 2

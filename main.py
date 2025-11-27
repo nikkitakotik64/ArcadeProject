@@ -11,13 +11,13 @@ class App(ar.Window):  # Собственно окно игры
         self.player_falling = 0  # переменная для обработки состояния игрока
         # TODO: вынести игрока в отдельный класс
         self.events = list()  # список событий
-        self.player_sprite = ar.sprite.Sprite(data.FILES['player'], self.k / 5)  # Текстура игрока
+        self.player_sprite = ar.sprite.Sprite(data.FILES['player'], self.k / 6)  # Текстура игрока
         # второй аргумент в текстуре, это множитель размера. Как его считать:
-        # игрок состовляет 2 клетки по ширине, всего 40 клеток, => это 1 / 20 ширины
+        # игрок состовляет 2 клетки по ширине, всего 48 клеток, => это 1 / 24 ширины
         # начальная ширина 800, текстура игрока 200, => текстура игрока занимает 1 / 4 длины
-        # 1 / 4 в пять раз больше 1 / 20, => размер надо делить на 5
+        # 1 / 4 в шесть раз больше 1 / 24, => размер надо делить на 6
         # домножаем на коэффицент, получаем self.k / 5
-        self.player_sprite.center_x, self.player_sprite.center_y = cell_pos(1, 10)
+        self.player_sprite.center_x, self.player_sprite.center_y = cell_center(1, 10)
         # размещаем игрока во второй клетке по горизонтали и во второй по вертикали (если считать снизу)
         self.player_list = ar.SpriteList()  # группа спрайтов для игроков
         self.player_list.append(self.player_sprite)  # добавляем спрайт в группу
