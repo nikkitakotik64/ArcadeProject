@@ -32,6 +32,13 @@ class App(ar.Window):  # Собственно окно игры
         # физика для игрока
         self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
                                                          gravity_constant=consts.GRAVITY * self.k)
+        self.setup()
+
+    def setup(self) -> None:
+        self.player_falling = 0
+        self.events = list()
+        self.player_sprite.center_x, self.player_sprite.center_y = cell_center(1, 10)
+        self.data_timer = data.get_data_timer()
 
     def on_draw(self) -> None:  # отрисовка
         # self.clear() обязательно, далее нужно отрисовать все необходимые списки спрайтов
