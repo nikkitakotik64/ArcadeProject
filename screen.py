@@ -31,6 +31,5 @@ def cell_pos(r: int, c: int) -> tuple[float, float]:  # координаты л�
     return c * CELL_SIDE + W_OUTLINE, (CELL_H - r - 1) * CELL_SIDE + H_OUTLINE
 
 def cell_center(r: int, c: int) -> tuple[float, float]:  # центр клетки
-    x, y = cell_pos(r, c)
-    y = CELL_H - y - 1
+    x, y = cell_pos(CELL_H - r - 1, c)
     return x + CELL_SIDE / 2, y + CELL_SIDE / 2

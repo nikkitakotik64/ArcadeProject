@@ -37,7 +37,7 @@ class App(ar.Window):  # Собственно окно игры
     def setup(self) -> None:
         self.player_falling = 0
         self.events = list()
-        self.player_sprite.center_x, self.player_sprite.center_y = cell_center(1, 10)
+        self.player_sprite.center_x, self.player_sprite.center_y = cell_center(1, 1)
         self.data_timer = data.get_data_timer()
 
     def on_draw(self) -> None:  # отрисовка
