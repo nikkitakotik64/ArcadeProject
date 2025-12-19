@@ -15,21 +15,21 @@ H_OUTLINE = H - HEIGHT
 # W_OUTLINE, H_OUTLINE - отступы от краёв экрана
 
 
-def pos(x, y) -> tuple[float, float]:  # позиция точки на экране по игровым координатам
+def pos(x, y) -> tuple[float, float]:
     return x + W_OUTLINE // 2, y + H_OUTLINE
 
 
-def get_size() -> tuple[float, float]:  # размер игровой области
+def get_size() -> tuple[float, float]:
     return WIDTH, HEIGHT
 
 
-def get_screen_size() -> tuple[float, float]:  # размер экрана
+def get_screen_size() -> tuple[float, float]:
     return W, H
 
 
-def cell_pos(r: int, c: int) -> tuple[float, float]:  # координаты левого верхнего угла клетки по ряду и колонке
+def cell_pos(r: int, c: int) -> tuple[float, float]:
     return c * CELL_SIDE + W_OUTLINE, (CELL_H - r - 1) * CELL_SIDE + H_OUTLINE
 
-def cell_center(r: int, c: int) -> tuple[float, float]:  # центр клетки
+def cell_center(r: int, c: int) -> tuple[float, float]:
     x, y = cell_pos(CELL_H - r - 1, c)
     return x + CELL_SIDE / 2, y + CELL_SIDE / 2
