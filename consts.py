@@ -1,3 +1,5 @@
-SPEED = 5                       # скорость по горизонтали
-JUMP_SPEED = 15                 # скорость прыжка
-GRAVITY = 1                     # ускорение свободного падения
+SPEED = 5
+JUMP_SPEED = 15
+GRAVITY = 1
+SITING_SPEED = 2
+LAYING = 0.5

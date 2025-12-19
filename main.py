@@ -2,29 +2,40 @@ from screen import *
 import consts
 from events_id import EventsID
 from sprites.player import Player, PlayerStatus
+from sprites.world_wall import WorldWall
+from sprites.wall import Wall
 
 
 class App(ar.Window):
     def __init__(self) -> None:
         super().__init__(1, 1, 'Game', fullscreen=True)
-        self.k = WIDTH / 800
-
-        self.player = Player(data.FILES['player'], self.k / 6, 1, 10)
+        self.k = CELL_SIDE / 16
         self.events = list()
+
+        self.wall_list = ar.SpriteList()
+        self.wall_list.append(WorldWall(data.FILES['hor_world_wall'], self.k, self.width / 2, -1))
+        self.wall_list.append(WorldWall(data.FILES['hor_world_wall'], self.k, self.width / 2, self.height + 1))
+        self.wall_list.append(WorldWall(data.FILES['vert_world_wall'], self.k, -CELL_SIDE / 2, self.height / 2))
+        self.wall_list.append(WorldWall(data.FILES['vert_world_wall'], self.k, self.width + CELL_SIDE / 2, self.height / 2))
+        self.wall_list.append(Wall(data.FILES['wall'], self.k / 8, *cell_center(2, 2)))
+        self.wall_list.append(Wall(data.FILES['wall'], self.k / 8, *cell_center(0, 2)))
+        self.wall_list.append(Wall(data.FILES['wall'], self.k / 8, *cell_center(1, 2)))
+
+        self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
+                             data.FILES['player_laying'], self.k / 6, 1, 10)
         self.player_sprite = self.player.get_sprite()
         self.player_list = ar.SpriteList()
         self.player_list.append(self.player_sprite)
-
-        self.wall_list = ar.SpriteList()
-        wall = ar.sprite.Sprite(data.FILES['wall'], self.k)
-        wall.center_x, wall.center_y = self.width // 2, 0
-        self.wall_list.append(wall)
-        # TODO: задать стены через отдельный класс по-нормальному
-
-        self.data_timer = data.get_data_timer()
         self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
                                                          gravity_constant=consts.GRAVITY * self.k)
+
+        self.data_timer = data.get_data_timer()
         self.setup()
+
+    def update_player_sprite(self) -> None:
+        self.player_sprite = self.player.get_sprite()
+        self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
+                                                         gravity_constant=consts.GRAVITY * self.k)
 
     def setup(self) -> None:
         self.events = list()
@@ -42,9 +53,15 @@ class App(ar.Window):
             if EventsID.RIGHT in self.events:
                 self.player_sprite.change_x = 0
             else:
-                self.player_sprite.change_x = -consts.SPEED * self.k
+                if self.player.status == PlayerStatus.SITING:
+                    self.player_sprite.change_x = -consts.SITING_SPEED * self.k
+                elif self.player.status != PlayerStatus.LAYING:
+                    self.player_sprite.change_x = -consts.SPEED * self.k
         elif EventsID.RIGHT in self.events:
-            self.player_sprite.change_x = consts.SPEED * self.k
+            if self.player.status == PlayerStatus.SITING:
+                self.player_sprite.change_x = consts.SITING_SPEED * self.k
+            elif self.player.status != PlayerStatus.LAYING:
+                self.player_sprite.change_x = consts.SPEED * self.k
         else:
             self.player_sprite.change_x = 0
 
@@ -59,6 +76,9 @@ class App(ar.Window):
     def on_update(self, delta_time: float) -> None:
         self.events_update()
         self.player_physics.update()
+        self.player_sprite = self.player.get_sprite()
+        self.player_list = ar.SpriteList()
+        self.player_list.append(self.player_sprite)
         self.player_list.update(delta_time)
         self.wall_list.update(delta_time)
 
@@ -72,11 +92,22 @@ class App(ar.Window):
         if key == ar.key.ESCAPE:
             ar.exit()
         if key == ar.key.W:
-            self.events.append(EventsID.UP)
+            if self.player.get_status() != PlayerStatus.SITING and self.player.get_status() != PlayerStatus.LAYING:
+                self.events.append(EventsID.UP)
+            else:
+                self.player.up()
+                self.player_sprite = self.player.get_sprite()
+                self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
+                                                                 gravity_constant=consts.GRAVITY * self.k)
         if key == ar.key.D:
             self.events.append(EventsID.RIGHT)
         if key == ar.key.A:
             self.events.append(EventsID.LEFT)
+        if key == ar.key.S:
+            self.player.down()
+            self.player_sprite = self.player.get_sprite()
+            self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
+                                                             gravity_constant=consts.GRAVITY * self.k)
         if key == ar.key.SPACE:
             self.events.append(EventsID.SHOOT)
 
