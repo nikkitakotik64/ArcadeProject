@@ -9,7 +9,7 @@ class Data:
         'player_staying': data_folder + '/player.png',
         'player_siting': data_folder + '/sit.png',
         'player_laying': data_folder + '/lay.png',
-        'wall': data_folder + '/wall.png',
+        'wall-1': data_folder + '/wall.png',  # тестовая стена без текстуры !
         'data': data_folder + '/data.game',
         'hor_world_wall': data_folder + '/hor_world_wall.png',
         'vert_world_wall': data_folder + '/vert_world_wall.png'

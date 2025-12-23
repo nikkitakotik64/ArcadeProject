@@ -1,5 +1,4 @@
 import arcade as ar
-from data.savings import data
 
 W, H = ar.get_display_size()
 CELL_H, CELL_W = 27, 48
