@@ -1,18 +1,19 @@
 import os
 
 data_folder = os.path.dirname(__file__)
+image_folder = data_folder + '/images'
 # TODO: сделать нормальное чтение и запись в файл
 
 
 class Data:
     FILES = {
-        'player_staying': data_folder + '/player.png',
-        'player_siting': data_folder + '/sit.png',
-        'player_laying': data_folder + '/lay.png',
-        'wall-1': data_folder + '/wall.png',  # тестовая стена без текстуры !
+        'player_staying': image_folder + '/player.png',
+        'player_siting': image_folder + '/sit.png',
+        'player_laying': image_folder + '/lay.png',
+        'wall-1': image_folder + '/wall.png',  # тестовая стена без текстуры !
         'data': data_folder + '/data.game',
-        'hor_world_wall': data_folder + '/hor_world_wall.png',
-        'vert_world_wall': data_folder + '/vert_world_wall.png'
+        'hor_world_wall': image_folder + '/hor_world_wall.png',
+        'vert_world_wall': image_folder + '/vert_world_wall.png'
     }
 
     def __init__(self) -> None:

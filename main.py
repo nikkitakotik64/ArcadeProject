@@ -18,9 +18,9 @@ class App(ar.Window):
         self.wall_list.append(WorldWall(data.FILES['hor_world_wall'], self.k, self.width / 2, self.height + 1))
         self.wall_list.append(WorldWall(data.FILES['vert_world_wall'], self.k, -CELL_SIDE / 2, self.height / 2))
         self.wall_list.append(WorldWall(data.FILES['vert_world_wall'], self.k, self.width + CELL_SIDE / 2, self.height / 2))
-        self.wall_list.append(Wall(-1, self.k / 8, *cell_center(2, 2)))
-        self.wall_list.append(Wall(-1, self.k / 8, *cell_center(0, 2)))
-        self.wall_list.append(Wall(-1, self.k / 8, *cell_center(1, 2)))
+        self.wall_list.append(Wall(-1, self.k / 8, 2, 2))
+        self.wall_list.append(Wall(-1, self.k / 8, 0, 2))
+        self.wall_list.append(Wall(-1, self.k / 8, 1, 2))
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                              data.FILES['player_laying'], self.k / 6, 1, 10)

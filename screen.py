@@ -2,7 +2,7 @@ import arcade as ar
 
 W, H = ar.get_display_size()
 CELL_H, CELL_W = 27, 48
-CELL_SIDE = min(H // CELL_H, W // CELL_W)
+CELL_SIDE = min(H / CELL_H, W / CELL_W)
 WIDTH = CELL_SIDE * CELL_W
 HEIGHT = CELL_SIDE * CELL_H
 W_OUTLINE = W - WIDTH
