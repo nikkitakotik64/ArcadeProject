@@ -5,10 +5,11 @@ from sprites.player import Player, PlayerStatus
 from sprites.world_wall import WorldWall
 from sprites.wall import Wall
 from data.savings import data
+from level_types import LevelType
 
 
 class App(ar.Window):
-    def __init__(self) -> None:
+    def __init__(self, level_id: int = -1) -> None:
         super().__init__(1, 1, 'Game', fullscreen=True)
         self.k = CELL_SIDE / 16
         self.events = list()
@@ -18,9 +19,15 @@ class App(ar.Window):
         self.wall_list.append(WorldWall(data.FILES['hor_world_wall'], self.k, self.width / 2, self.height + 1))
         self.wall_list.append(WorldWall(data.FILES['vert_world_wall'], self.k, -CELL_SIDE / 2, self.height / 2))
         self.wall_list.append(WorldWall(data.FILES['vert_world_wall'], self.k, self.width + CELL_SIDE / 2, self.height / 2))
-        self.wall_list.append(Wall(-1, self.k / 8, 2, 2))
-        self.wall_list.append(Wall(-1, self.k / 8, 0, 2))
-        self.wall_list.append(Wall(-1, self.k / 8, 1, 2))
+        if level_id == -1:  # TODO: тестовый вариант, удалить !
+            self.wall_list.append(Wall(-1, self.k / 8, 2, 2))
+            self.wall_list.append(Wall(-1, self.k / 8, 0, 2))
+            self.wall_list.append(Wall(-1, self.k / 8, 1, 2))
+            self.level_type = LevelType.ROOMS
+        else:
+            level, level_type = data.get_level_info(level_id)
+            # TODO: сделать
+
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                              data.FILES['player_laying'], self.k / 6, 1, 10)
@@ -121,7 +128,6 @@ class App(ar.Window):
             self.events.remove(EventsID.UP)
         if key == ar.key.SPACE:
             self.events.remove(EventsID.SHOOT)
-
 
 
 if __name__ == "__main__":
