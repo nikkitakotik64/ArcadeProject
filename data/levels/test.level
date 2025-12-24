@@ -1,0 +1,1 @@
+{"type": 1, "rooms": {"0": {"walls": [{"row": 1, "col": 1, "texture_id": -1}, {"row": 1, "col": 4, "texture_id": -1}], "decor": [], "elevators": [{"pos": 1, "direction": 2, "room": 1}]}, "1": {"walls": [], "decor": [], "elevators": [{"pos": 1, "direction": 1, "room": -1}]}}}

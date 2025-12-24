@@ -1,5 +1,6 @@
 import os
 import json
+from level_types import LevelType
 
 data_folder = os.path.dirname(__file__)
 image_folder = data_folder + '/images'
@@ -19,11 +20,8 @@ class Data:
     }
 
     LEVELS = {
-        0: levels_folder + '/level0.level',
+        -1: levels_folder + '/test.level',
     }
-
-    with open(data_folder + '/level_types.game', 'r') as file:
-        LEVEL_TYPES = json.loads(file.read())
 
     def __init__(self) -> None:
         self.data_timer = 60 * 5
@@ -34,11 +32,11 @@ class Data:
     def save(self) -> None:
         pass
 
-    def get_level_info(self, level_id: int) -> tuple[dict, int]:
-        level = dict()
-        # TODO: считать json !
-        level_type = self.LEVEL_TYPES[str(level_id)]
-        return level, int(level_type)
+    def get_level_info(self, level_id: int) -> tuple[dict, LevelType]:
+        with open(self.LEVELS[level_id], 'r') as file:
+            level = json.loads(file.read())
+        level_type = LevelType(level['type'])
+        return level, level_type
 
 
 data = Data()

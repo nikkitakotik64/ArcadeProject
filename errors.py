@@ -1,0 +1,2 @@
+class WrongLevelTypeError(Exception):
+    pass
