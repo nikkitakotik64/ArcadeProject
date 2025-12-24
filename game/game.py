@@ -23,6 +23,7 @@ class Game(ar.Window):
         self.world_walls.add(WorldWall(data.FILES['vert_world_wall'], self.height / 450,
                                        self.width + CELL_SIDE / 2, self.height / 2))
         self.wall_list = ar.SpriteList()
+        self.func_objects = ar.SpriteList()
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                              data.FILES['player_laying'], self.k / 6, 1, 10)
@@ -38,11 +39,14 @@ class Game(ar.Window):
         self.player_sprite = self.player.get_sprite()
         self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
                                                          gravity_constant=consts.GRAVITY * self.k)
+        self.player_list = ar.SpriteList()
+        self.player_list.append(self.player_sprite)
 
     def on_draw(self) -> None:
         self.clear()
         self.player_list.draw()
         self.wall_list.draw()
+        self.func_objects.draw()
 
     def events_update(self) -> None:
         if EventsID.LEFT in self.events:
@@ -72,9 +76,6 @@ class Game(ar.Window):
     def on_update(self, delta_time: float) -> None:
         self.events_update()
         self.player_physics.update()
-        self.player_sprite = self.player.get_sprite()
-        self.player_list = ar.SpriteList()
-        self.player_list.append(self.player_sprite)
         self.player_list.update(delta_time)
         self.wall_list.update(delta_time)
 
@@ -92,18 +93,12 @@ class Game(ar.Window):
                 self.events.append(EventsID.UP)
             else:
                 self.player.up()
-                self.player_sprite = self.player.get_sprite()
-                self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
-                                                                 gravity_constant=consts.GRAVITY * self.k)
         if key == ar.key.D:
             self.events.append(EventsID.RIGHT)
         if key == ar.key.A:
             self.events.append(EventsID.LEFT)
         if key == ar.key.S:
             self.player.down()
-            self.player_sprite = self.player.get_sprite()
-            self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
-                                                             gravity_constant=consts.GRAVITY * self.k)
         if key == ar.key.SPACE:
             self.events.append(EventsID.SHOOT)
 
@@ -112,7 +107,7 @@ class Game(ar.Window):
             self.events.remove(EventsID.LEFT)
         if key == ar.key.D:
             self.events.remove(EventsID.RIGHT)
-        if key == ar.key.W:
+        if key == ar.key.W and EventsID.UP in self.events:
             self.events.remove(EventsID.UP)
         if key == ar.key.SPACE:
             self.events.remove(EventsID.SHOOT)

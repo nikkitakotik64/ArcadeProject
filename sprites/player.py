@@ -31,17 +31,15 @@ class Player:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
             self.sprite = ar.sprite.Sprite(self.texture_siting, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
-            self.app.update_player_sprite()
         elif status == PlayerStatus.LAYING:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
             self.sprite = ar.sprite.Sprite(self.texture_laying, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
-            self.app.update_player_sprite()
         else:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
             self.sprite = ar.sprite.Sprite(self.texture_staying, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
-            self.app.update_player_sprite()
+        self.app.update_player_sprite()
 
     def set_status(self, status: PlayerStatus) -> None:
         if self.status == PlayerStatus.SITING or self.status == PlayerStatus.LAYING:
