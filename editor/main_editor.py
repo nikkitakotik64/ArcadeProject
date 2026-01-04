@@ -25,7 +25,7 @@ class Level_Menu(ar.View):
         )
         for i, name in enumerate(self.level_list):
             # делаем кнопку уровня
-            edit_btn = ar.gui.UIFlatButton(text=name, width=200)
+            edit_btn = ar.gui.UIFlatButton(text=name, width=400)
             edit_btn.level_index = i
             edit_btn.on_click = self.on_edit_click
             grid.add(edit_btn, column = 0, row = i)

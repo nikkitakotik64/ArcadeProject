@@ -195,7 +195,7 @@ class UIScrollArea(UILayout):
     scroll_x = Property[float](default=0.0)
     scroll_y = Property[float](default=0.0)
 
-    scroll_speed = 1.8
+    scroll_speed = 7.7
     invert_scroll = False
 
     def __init__(
