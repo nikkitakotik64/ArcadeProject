@@ -1,4 +1,6 @@
 import arcade as ar
+import arcade.gui
+from work_with_levels import *
 
 
 SCREEN_WIDTH = 800
@@ -9,6 +11,32 @@ class Level_Menu(ar.View):
     def __init__(self):
         super().__init__()
         self.manager = ar.gui.UIManager()
+        self.level_list = List_of_Levels.get_levels()
+        self.create_grid()
+
+    def create_grid(self):
+        grid = ar.gui.UIGridLayout(
+            column_count=2, row_count=len(self.level_list), horizontal_spacing=20, vertical_spacing=20
+        )
+        for i, name in enumerate(self.level_list):
+            # делаем кнопку уровня
+            edit_btn = ar.gui.UIFlatButton(text=name, width=200)
+            edit_btn.level_index = i
+            edit_btn.on_click = self.on_edit_click
+            grid.add(edit_btn, column = 0, row = i)
+            # делаем кнопку удаления рядом
+            del_btn = ar.gui.UIFlatButton(text="del", width=50)
+            del_btn.level_index = i
+            del_btn.on_click = self.on_delete_click
+            grid.add(del_btn, column = 1, row = i)
+
+        anchor_layout = self.manager.add(ar.gui.UIAnchorLayout())
+        anchor_layout.add(
+            anchor_x="center_x",  # Центрирование по X
+            anchor_y="center_y",  # Центрирование по Y
+            child=grid
+        )
+
 
 # Запускается 1 раз при создании этого окна
     def on_show_view(self):
@@ -21,6 +49,14 @@ class Level_Menu(ar.View):
     def on_draw(self):
         self.clear()
         self.manager.draw()
+
+
+
+    def on_edit_click(self, event):
+        pass
+
+    def on_delete_click(self, event):
+        pass
 
 
 def main():
