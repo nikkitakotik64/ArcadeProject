@@ -1,5 +1,6 @@
 import arcade as ar
 import arcade.gui
+from Scroll_Area import *
 from work_with_levels import *
 
 
@@ -15,6 +16,10 @@ class Level_Menu(ar.View):
         self.create_grid()
 
     def create_grid(self):
+        self.scroll_area = UIScrollArea(
+            width=600,
+            height=400
+        )
         grid = ar.gui.UIGridLayout(
             column_count=2, row_count=len(self.level_list), horizontal_spacing=20, vertical_spacing=20
         )
@@ -31,10 +36,11 @@ class Level_Menu(ar.View):
             grid.add(del_btn, column = 1, row = i)
 
         anchor_layout = self.manager.add(ar.gui.UIAnchorLayout())
+        self.scroll_area.add(grid)
         anchor_layout.add(
-            anchor_x="center_x",  # Центрирование по X
-            anchor_y="center_y",  # Центрирование по Y
-            child=grid
+            anchor_x="center_x",
+            anchor_y="center_y",
+            child=self.scroll_area
         )
 
 
