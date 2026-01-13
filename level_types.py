@@ -2,6 +2,6 @@ from enum import Enum
 
 
 class LevelType(Enum):
-    ROOMS = 1
-    LONG_WAY = 2
-    BOSS_FIGHT = 3
+    rooms = 1
+    long_way = 2
+    boss_fight = 3

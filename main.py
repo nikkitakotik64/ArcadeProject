@@ -9,13 +9,13 @@ def main():
     level, level_type = data.get_level_info(level_id)
     flag = False
     match level_type:
-        case LevelType.ROOMS:
+        case LevelType.rooms:
             flag = True
             game = RoomGame(level)
             game.run()
-        case LevelType.LONG_WAY:
+        case LevelType.long_way:
             flag = True
-        case LevelType.BOSS_FIGHT:
+        case LevelType.boss_fight:
             flag = True
     if not flag:
         raise WrongLevelTypeError(f'Level type {level_type} is not supported')

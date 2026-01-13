@@ -1,20 +1,22 @@
 from enum import Enum
 import arcade as ar
 from screen import cell_center
+from game_types import Direction
+from sprites.weapons import Weapon
 
 
 class PlayerStatus(Enum):
-    NORMAL = 0
-    JUMPING = 1
-    FALLING = 2
-    SITING = 3
-    LAYING = 4
+    normal = 0
+    jumping = 1
+    falling = 2
+    siting = 3
+    laying = 4
 
 
 class Player:
     def __init__(self, app, texture_staying: str, texture_siting: str, texture_laying: str,
                  scale: float, row: int, col: int) -> None:
-        self.status = PlayerStatus.NORMAL
+        self.status = PlayerStatus.normal
         self.sprite = ar.sprite.Sprite(texture_staying, scale)
         self.texture_staying = texture_staying
         self.texture_siting = texture_siting
@@ -22,16 +24,18 @@ class Player:
         self.app = app
         self.texture_laying = texture_laying
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
+        self.direction = Direction.right
+        self.weapon = Weapon(30, 3, 5, 10, 40, 8, 5 / 60, 60 / 60, 15)
 
     def move(self, row: int, col: int) -> None:
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
 
     def update_texture(self, status: PlayerStatus) -> None:
-        if status == PlayerStatus.SITING:
+        if status == PlayerStatus.siting:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
             self.sprite = ar.sprite.Sprite(self.texture_siting, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
-        elif status == PlayerStatus.LAYING:
+        elif status == PlayerStatus.laying:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
             self.sprite = ar.sprite.Sprite(self.texture_laying, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
@@ -42,7 +46,7 @@ class Player:
         self.app.update_player_sprite()
 
     def set_status(self, status: PlayerStatus) -> None:
-        if self.status == PlayerStatus.SITING or self.status == PlayerStatus.LAYING:
+        if self.status == PlayerStatus.siting or self.status == PlayerStatus.laying:
             self.update_texture(status)
         self.status = status
 
@@ -54,18 +58,39 @@ class Player:
 
     def down(self) -> None:
         match self.status:
-            case PlayerStatus.NORMAL:
-                self.status = PlayerStatus.SITING
+            case PlayerStatus.normal:
+                self.status = PlayerStatus.siting
                 self.update_texture(self.status)
-            case PlayerStatus.SITING:
-                self.status = PlayerStatus.LAYING
+            case PlayerStatus.siting:
+                self.status = PlayerStatus.laying
                 self.update_texture(self.status)
 
     def up(self) -> None:
         match self.status:
-            case PlayerStatus.LAYING:
-                self.status = PlayerStatus.SITING
+            case PlayerStatus.laying:
+                self.status = PlayerStatus.siting
                 self.update_texture(self.status)
-            case PlayerStatus.SITING:
-                self.status = PlayerStatus.NORMAL
+            case PlayerStatus.siting:
+                self.status = PlayerStatus.normal
                 self.update_texture(self.status)
+
+    def set_direction(self, direction: Direction) -> None:
+        self.direction = direction
+
+    def shoot(self) -> tuple[bool, list]:
+        if self.weapon.can_shoot():
+            bullet_speed, angle = self.weapon.shoot(self.direction)
+            x = -1
+            match self.direction:
+                case Direction.right:
+                    x = self.sprite.right
+                case Direction.left:
+                    x = self.sprite.left
+            return True, [x, self.sprite.center_y, bullet_speed, angle, self]
+        return False, []
+
+    def on_update(self, delta_time: float) -> None:
+        self.weapon.on_update(delta_time)
+
+    def reload(self) -> None:
+        self.weapon.start_reload()

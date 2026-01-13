@@ -6,6 +6,7 @@ from screen import *
 import arcade as ar
 from sprites.world_wall import WorldWall
 from sprites.player import Player
+from game_types import Direction
 
 
 class Game(ar.Window):
@@ -49,32 +50,43 @@ class Game(ar.Window):
         self.func_objects.draw()
 
     def events_update(self) -> None:
-        if EventsID.LEFT in self.events:
-            if EventsID.RIGHT in self.events:
+        if EventsID.left in self.events:
+            if EventsID.right in self.events:
                 self.player_sprite.change_x = 0
             else:
-                if self.player.status == PlayerStatus.SITING:
+                self.player.set_direction(Direction.left)
+                if self.player.status == PlayerStatus.siting:
                     self.player_sprite.change_x = -consts.SITING_SPEED * self.k
-                elif self.player.status != PlayerStatus.LAYING:
+                elif self.player.status != PlayerStatus.laying:
                     self.player_sprite.change_x = -consts.SPEED * self.k
-        elif EventsID.RIGHT in self.events:
-            if self.player.status == PlayerStatus.SITING:
+        elif EventsID.right in self.events:
+            self.player.set_direction(Direction.right)
+            if self.player.status == PlayerStatus.siting:
                 self.player_sprite.change_x = consts.SITING_SPEED * self.k
-            elif self.player.status != PlayerStatus.LAYING:
+            elif self.player.status != PlayerStatus.laying:
                 self.player_sprite.change_x = consts.SPEED * self.k
         else:
             self.player_sprite.change_x = 0
 
         if self.player_sprite.change_y < 0:
-            self.player.set_status(PlayerStatus.FALLING)
-        if not self.player_sprite.change_y and self.player.get_status() == PlayerStatus.FALLING:
-            self.player.set_status(PlayerStatus.NORMAL)
-        if EventsID.UP in self.events and self.player.get_status() == PlayerStatus.NORMAL:
+            self.player.set_status(PlayerStatus.falling)
+        if not self.player_sprite.change_y and self.player.get_status() == PlayerStatus.falling:
+            self.player.set_status(PlayerStatus.normal)
+        if EventsID.up in self.events and self.player.get_status() == PlayerStatus.normal:
             self.player_sprite.change_y = consts.JUMP_SPEED * self.k
-            self.player.set_status(PlayerStatus.JUMPING)
+            self.player.set_status(PlayerStatus.jumping)
+
+        if EventsID.shoot in self.events:
+            is_success, arr = self.player.shoot()
+            if is_success:
+                pass
+                # TODO: shoot
+        if EventsID.reload in self.events:
+            self.player.reload()
 
     def on_update(self, delta_time: float) -> None:
         self.events_update()
+        self.player.on_update(delta_time)
         self.player_physics.update()
         self.player_list.update(delta_time)
         self.wall_list.update(delta_time)
@@ -89,25 +101,44 @@ class Game(ar.Window):
         if key == ar.key.ESCAPE:
             ar.exit()
         if key == ar.key.W:
-            if self.player.get_status() != PlayerStatus.SITING and self.player.get_status() != PlayerStatus.LAYING:
-                self.events.append(EventsID.UP)
+            if self.player.get_status() != PlayerStatus.siting and self.player.get_status() != PlayerStatus.laying:
+                self.events.append(EventsID.up)
             else:
                 self.player.up()
         if key == ar.key.D:
-            self.events.append(EventsID.RIGHT)
+            self.events.append(EventsID.right)
         if key == ar.key.A:
-            self.events.append(EventsID.LEFT)
+            self.events.append(EventsID.left)
         if key == ar.key.S:
             self.player.down()
         if key == ar.key.SPACE:
-            self.events.append(EventsID.SHOOT)
+            self.events.append(EventsID.shoot)
+        if key == ar.key.R:
+            self.events.append(EventsID.reload)
 
     def on_key_release(self, key: int, modifiers: int) -> None:
-        if key == ar.key.A:
-            self.events.remove(EventsID.LEFT)
-        if key == ar.key.D:
-            self.events.remove(EventsID.RIGHT)
-        if key == ar.key.W and EventsID.UP in self.events:
-            self.events.remove(EventsID.UP)
-        if key == ar.key.SPACE:
-            self.events.remove(EventsID.SHOOT)
+        try:
+            if key == ar.key.A:
+                self.events.remove(EventsID.left)
+        except ValueError:
+            pass
+        try:
+            if key == ar.key.D:
+                self.events.remove(EventsID.right)
+        except ValueError:
+            pass
+        try:
+            if key == ar.key.W and EventsID.up in self.events:
+                self.events.remove(EventsID.up)
+        except ValueError:
+            pass
+        try:
+            if key == ar.key.SPACE:
+                self.events.remove(EventsID.shoot)
+        except ValueError:
+            pass
+        try:
+            if key == ar.key.R:
+                self.events.remove(EventsID.reload)
+        except ValueError:
+            pass
