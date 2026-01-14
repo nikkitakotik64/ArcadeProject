@@ -2,7 +2,7 @@ from enum import Enum
 import arcade as ar
 from screen import cell_center
 from game_types import Direction
-from sprites.weapons import Weapon
+from sprites.weapons import StartWeapon, WeaponStatus
 
 
 class PlayerStatus(Enum):
@@ -25,7 +25,7 @@ class Player:
         self.texture_laying = texture_laying
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
         self.direction = Direction.right
-        self.weapon = Weapon(30, 3, 5, 10, 40, 8, 5 / 60, 2.5, 150)
+        self.weapon = StartWeapon()
 
     def move(self, row: int, col: int) -> None:
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
@@ -79,18 +79,22 @@ class Player:
 
     def shoot(self) -> tuple[bool, list]:
         if self.weapon.can_shoot():
-            bullet_speed, angle = self.weapon.shoot(self.direction)
-            x = -1
-            match self.direction:
-                case Direction.right:
-                    x = self.sprite.right
-                case Direction.left:
-                    x = self.sprite.left
-            return True, [x, self.sprite.center_y, bullet_speed, angle, self]
+            bullets = list()
+            for bullet_speed, angle in self.weapon.shoot(self.direction):
+                x = -1
+                match self.direction:
+                    case Direction.right:
+                        x = self.sprite.right
+                    case Direction.left:
+                        x = self.sprite.left
+                bullets.append([x, self.sprite.center_y, bullet_speed, angle, self])
+            return True, bullets
         return False, []
 
     def on_update(self, delta_time: float) -> None:
         self.weapon.on_update(delta_time)
+        if self.weapon.get_status() == WeaponStatus.no_ammo:
+            self.weapon = StartWeapon()
 
     def reload(self) -> None:
         self.weapon.start_reload()

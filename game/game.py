@@ -81,12 +81,11 @@ class Game(ar.Window):
             self.player.set_status(PlayerStatus.jumping)
 
         if EventsID.shoot in self.events:
-            is_success, arr = self.player.shoot()
+            is_success, bullets = self.player.shoot()
             if is_success:
-                x, y, bullet_speed, angle, parent = arr
-                bullet = Bullet(x, y, bullet_speed, angle, 1 / 4, parent)
-                self.bullets.append(bullet)
-                # TODO: shoot
+                for x, y, bullet_speed, angle, parent in bullets:
+                    bullet = Bullet(x, y, bullet_speed, angle, 1 / 4, parent)
+                    self.bullets.append(bullet)
         if EventsID.reload in self.events:
             self.player.reload()
 
