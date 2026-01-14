@@ -24,7 +24,7 @@ class Game(ar.Window):
         self.world_walls.add(WorldWall(data.FILES['vert_world_wall'], self.height / 450,
                                        self.width + CELL_SIDE / 2, self.height / 2))
         self.wall_list = ar.SpriteList()
-        self.func_objects = ar.SpriteList()
+        self.functional_objects = ar.SpriteList()
         self.decor = ar.SpriteList()
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
@@ -48,7 +48,7 @@ class Game(ar.Window):
         self.clear()
         self.player_list.draw()
         self.wall_list.draw()
-        self.func_objects.draw()
+        self.functional_objects.draw()
 
     def events_update(self) -> None:
         if EventsID.left in self.events:

@@ -68,9 +68,10 @@ class ElevatorBlock(ar.sprite.Sprite):
 
 class ElevatorButton(ar.sprite.Sprite):
     def __init__(self, texture_id: int, scale: float, row: int, col: int, elevator: Elevator) -> None:
-        texture = data.FILES[f'elevator_button{texture_id}']
-        super().__init__(texture, scale)
-        self.center_x, self.center_y = cell_center(row, col)
+        # TODO: add this code later (do textures)
+        # texture = data.FILES[f'elevator_button{texture_id}']
+        # super().__init__(texture, scale)
+        # self.center_x, self.center_y = cell_center(row, col)
         self.elevator = elevator
 
     def get_elevator(self) -> Elevator:
@@ -82,9 +83,11 @@ class ElevatorButton(ar.sprite.Sprite):
 
 class ElevatorMine(ar.sprite.Sprite):
     def __init__(self, texture_id: int, scale: float, row: int, col: int) -> None:
-        texture = data.FILES[f'elevator_mine{texture_id}']
-        super().__init__(texture, scale)
-        self.center_x, self.center_y = cell_center(row, col)
+        # TODO: add this code later (do textures)
+        # texture = data.FILES[f'elevator_mine{texture_id}']
+        # super().__init__(texture, scale)
+        # self.center_x, self.center_y = cell_center(row, col)
+        pass
 
 
 class Elevator:

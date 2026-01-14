@@ -21,7 +21,7 @@ class Game(AbstractGame):
             row, col, obj_type, add = obj['row'], obj['col'], obj['type'], obj['additionally']
             match obj_type:
                 case 1:
-                    self.func_objects.append(Sign(self.k, row, col, add['text']))
+                    self.functional_objects.append(Sign(self.k, row, col, add['text']))
 
         for elev in level['rooms'][str(self.room)]['elevators']:
             pos, direction, room = elev['pos'], elev['direction'], elev['room']
@@ -31,8 +31,9 @@ class Game(AbstractGame):
         for elevator in self.elevators:
             for wall in elevator.get_walls():
                 self.wall_list.append(wall)
-            self.functional_objects.append(elevator.get_button())
-            self.decor.append(elevator.get_mine())
+            # TODO: add this code later (do textures)
+            # self.functional_objects.append(elevator.get_button())
+            # self.decor.append(elevator.get_mine())
 
         for wall in self.world_walls:
             self.wall_list.append(wall)
