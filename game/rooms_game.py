@@ -10,6 +10,8 @@ class Game(AbstractGame):
         super().__init__()
         self.level = level
         self.room = 0
+        self.elevators = []
+        self.memory = dict()
 
         for wall in level['rooms'][str(self.room)]['walls']:
             row, col, texture_id = wall['row'], wall['col'], wall['texture_id']
@@ -23,7 +25,14 @@ class Game(AbstractGame):
 
         for elev in level['rooms'][str(self.room)]['elevators']:
             pos, direction, room = elev['pos'], elev['direction'], elev['room']
-            elevator = Elevator(self.k, pos, direction, room)
+            elevator = Elevator(self.k, pos, direction, room, level['background'])
+            self.elevators.append(elevator)
+
+        for elevator in self.elevators:
+            for wall in elevator.get_walls():
+                self.wall_list.append(wall)
+            self.functional_objects.append(elevator.get_button())
+            self.decor.append(elevator.get_mine())
 
         for wall in self.world_walls:
             self.wall_list.append(wall)

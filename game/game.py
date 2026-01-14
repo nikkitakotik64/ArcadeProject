@@ -24,6 +24,7 @@ class Game(ar.Window):
                                        self.width + CELL_SIDE / 2, self.height / 2))
         self.wall_list = ar.SpriteList()
         self.func_objects = ar.SpriteList()
+        self.decor = ar.SpriteList()
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                              data.FILES['player_laying'], self.k / 6, 1, 10)
