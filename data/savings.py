@@ -17,6 +17,7 @@ class Data:
         'data': data_folder + '/data.game',
         'hor_world_wall': image_folder + '/hor_world_wall.png',
         'vert_world_wall': image_folder + '/vert_world_wall.png',
+        'bullet': image_folder + '/bullet.png',
     }
 
     LEVELS = {

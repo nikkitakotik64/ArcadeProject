@@ -25,7 +25,7 @@ class Player:
         self.texture_laying = texture_laying
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
         self.direction = Direction.right
-        self.weapon = Weapon(30, 3, 5, 10, 40, 8, 5 / 60, 60 / 60, 15)
+        self.weapon = Weapon(30, 3, 5, 10, 40, 8, 5 / 60, 2.5, 150)
 
     def move(self, row: int, col: int) -> None:
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)

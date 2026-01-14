@@ -8,6 +8,7 @@ class WeaponStatus(Enum):
     normal = 0
     reloading = 1
     shooting = 2
+    no_ammo = 3
 
 
 class Weapon:
@@ -56,7 +57,6 @@ class Weapon:
                 self.status = WeaponStatus.shooting
                 self.now_ammo -= 1
                 return self.bullet_speed, 0 + randint(-self.spread_angle, self.spread_angle) % 360
-        raise TypeError('Unknown direction or unknown status')
 
     def start_reload(self) -> None:
         if self.status != WeaponStatus.normal:
@@ -65,10 +65,16 @@ class Weapon:
         self.timer = 0
 
     def end_reload(self) -> None:
+        if not self.magazines_ammo:
+            self.status = WeaponStatus.no_ammo
+            return
         self.status = WeaponStatus.normal
         self.timer = 0
         self.magazines_ammo -= self.count_of_ammo - self.now_ammo
         self.now_ammo = self.count_of_ammo
+        while self.magazines_ammo < 0:
+            self.magazines_ammo += 1
+            self.now_ammo -= 1
 
     def on_update(self, delta_time: float) -> None:
         if self.status == WeaponStatus.shooting:

@@ -6,10 +6,10 @@ from enum import Enum
 
 
 class ElevatorDoorStatus(Enum):
-    OPENED = 0
-    CLOSED = 1
-    OPENING = 2
-    CLOSING = 3
+    opened = 0
+    closed = 1
+    opening = 2
+    closing = 3
 
 
 class ElevatorDoor(ar.sprite.Sprite):
@@ -20,37 +20,37 @@ class ElevatorDoor(ar.sprite.Sprite):
         self.pos = cell_center(row, col)[1]
         self.center_x, self.center_y = cell_center(row, col0)
         self.start_pos = self.center_y
-        self.status = ElevatorDoorStatus.OPENED
+        self.status = ElevatorDoorStatus.opened
         self.direction = False if self.pos > self.center_y else True
         self.block = ElevatorBlock(self.scale, self.row, self.col0)
 
     def close(self) -> None:
-        self.status = ElevatorDoorStatus.CLOSING
+        self.status = ElevatorDoorStatus.closing
         self.block.move(self.center_x, self.pos)
 
     def on_update(self, delta_time: float) -> None:
-        if self.status == ElevatorDoorStatus.CLOSING:
+        if self.status == ElevatorDoorStatus.closing:
             if self.direction:
                 self.center_y = max(self.pos, self.center_y - delta_time * ELEVATOR_DOORS_SPEED)
                 if self.center_y == self.pos:
-                    self.status = ElevatorDoorStatus.CLOSED
+                    self.status = ElevatorDoorStatus.closed
             else:
                 self.center_y = min(self.pos, self.center_y + delta_time * ELEVATOR_DOORS_SPEED)
                 if self.center_y == self.pos:
-                    self.status = ElevatorDoorStatus.CLOSED
-        elif self.status == ElevatorDoorStatus.OPENING:
+                    self.status = ElevatorDoorStatus.closed
+        elif self.status == ElevatorDoorStatus.opening:
             if self.direction:
                 self.center_y = min(self.start_pos, self.center_y + delta_time * ELEVATOR_DOORS_SPEED)
                 if self.center_y == self.start_pos:
-                    self.status = ElevatorDoorStatus.OPENED
+                    self.status = ElevatorDoorStatus.opened
             else:
                 self.center_y = max(self.start_pos, self.center_y - delta_time * ELEVATOR_DOORS_SPEED)
                 if self.center_y == self.start_pos:
-                    self.status = ElevatorDoorStatus.OPENED
+                    self.status = ElevatorDoorStatus.opened
             self.block.move(self.center_x, self.center_y)
 
     def open(self) -> None:
-        self.status = ElevatorDoorStatus.OPENING
+        self.status = ElevatorDoorStatus.opening
 
     def get_block(self) -> ar.sprite.Sprite:
         return self.block

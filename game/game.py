@@ -7,6 +7,7 @@ import arcade as ar
 from sprites.world_wall import WorldWall
 from sprites.player import Player
 from game_types import Direction
+from sprites.bullet import Bullet
 
 
 class Game(ar.Window):
@@ -26,6 +27,7 @@ class Game(ar.Window):
         self.wall_list = ar.SpriteList()
         self.functional_objects = ar.SpriteList()
         self.decor = ar.SpriteList()
+        self.bullets = ar.SpriteList()
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                              data.FILES['player_laying'], self.k / 6, 1, 10)
@@ -47,6 +49,7 @@ class Game(ar.Window):
     def on_draw(self) -> None:
         self.clear()
         self.player_list.draw()
+        self.bullets.draw()
         self.wall_list.draw()
         self.functional_objects.draw()
 
@@ -80,10 +83,19 @@ class Game(ar.Window):
         if EventsID.shoot in self.events:
             is_success, arr = self.player.shoot()
             if is_success:
-                pass
+                x, y, bullet_speed, angle, parent = arr
+                bullet = Bullet(x, y, bullet_speed, angle, 1 / 4, parent)
+                self.bullets.append(bullet)
                 # TODO: shoot
         if EventsID.reload in self.events:
             self.player.reload()
+
+    def bullets_update(self, delta_time: float) -> None:
+        for bullet in self.bullets:
+            bullet.on_update(delta_time)
+            collision_list = ar.check_for_collision_with_list(bullet, self.wall_list)
+            if collision_list:
+                self.bullets.remove(bullet)
 
     def on_update(self, delta_time: float) -> None:
         self.events_update()
@@ -91,6 +103,7 @@ class Game(ar.Window):
         self.player_physics.update()
         self.player_list.update(delta_time)
         self.wall_list.update(delta_time)
+        self.bullets_update(delta_time)
 
         if self.data_timer <= 0:
             self.data_timer = data.get_data_timer()
