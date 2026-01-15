@@ -1,11 +1,16 @@
 from sprites.wall import Wall
+from screen import cell_center
 from game.game import Game as AbstractGame
 import arcade as ar
 from sprites.sign import Sign
 from sprites.elevator import Elevator
+from game_types import FunctionalObjectsTypes, Direction
+from sprites.enemy import Enemy, EnemyType, EnemyTypeCodes, EnemyDirectionCodes
+from errors import WrongEnemyTypeCodeError, WrongEnemyDirectionCodeError
+from sprites.weapons import StartWeapon
 
 
-class Game(AbstractGame):
+class SingleGame(AbstractGame):
     def __init__(self, level: dict) -> None:
         super().__init__()
         self.level = level
@@ -20,8 +25,37 @@ class Game(AbstractGame):
         for obj in level['rooms'][str(self.room)]['functional_objects']:
             row, col, obj_type, add = obj['row'], obj['col'], obj['type'], obj['additionally']
             match obj_type:
-                case 1:
+                case FunctionalObjectsTypes.sign:
                     self.functional_objects.append(Sign(self.k, row, col, add['text']))
+                case FunctionalObjectsTypes.staying_enemy:
+                    x, y = cell_center(row, col)
+                    match add['type']:
+                        case EnemyTypeCodes.laying:
+                            tp = EnemyType.laying
+                        case EnemyTypeCodes.siting:
+                            tp = EnemyType.siting
+                        case EnemyTypeCodes.staying:
+                            tp = EnemyType.staying
+                        case _:
+                            raise WrongEnemyTypeCodeError(f'Incorrect enemy type code: {add['type']}')
+                    match add['direction']:
+                        case EnemyDirectionCodes.right:
+                            dr = Direction.right
+                        case EnemyDirectionCodes.left:
+                            dr = Direction.left
+                        case _:
+                            raise WrongEnemyDirectionCodeError(f'Incorrect enemy direction code: {add["direction"]}')
+                    self.enemies.append(Enemy(x, y, tp, dr))
+
+        # TODO: delete
+        self.enemies.append(Enemy(*cell_center(10, 5),
+                                  EnemyType.staying, StartWeapon(), self.k / 6, Direction.right))
+        self.enemies.append(Enemy(*cell_center(10, 8),
+                                  EnemyType.staying, StartWeapon(), self.k / 6, Direction.right))
+        self.enemies.append(Enemy(*cell_center(10, 11),
+                                  EnemyType.staying, StartWeapon(), self.k / 6, Direction.right))
+        self.enemies.append(Enemy(*cell_center(10, 14),
+                                  EnemyType.staying, StartWeapon(), self.k / 6, Direction.right))
 
         for elev in level['rooms'][str(self.room)]['elevators']:
             pos, direction, room = elev['pos'], elev['direction'], elev['room']
@@ -39,6 +73,7 @@ class Game(AbstractGame):
             self.wall_list.append(wall)
 
         self.update_player_sprite()
+        self.update_enemies()
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         super().on_key_press(key, modifiers)

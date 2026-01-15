@@ -1,4 +1,4 @@
-from game.rooms_game import Game as RoomGame
+from game.rooms_game import SingleGame as SingleRoomGame
 from data.savings import data
 from level_types import LevelType
 from errors import WrongLevelTypeError
@@ -11,7 +11,7 @@ def main():
     match level_type:
         case LevelType.rooms:
             flag = True
-            game = RoomGame(level)
+            game = SingleRoomGame(level)
             game.run()
         case LevelType.long_way:
             flag = True

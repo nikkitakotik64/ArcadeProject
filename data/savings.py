@@ -18,6 +18,7 @@ class Data:
         'hor_world_wall': image_folder + '/hor_world_wall.png',
         'vert_world_wall': image_folder + '/vert_world_wall.png',
         'bullet': image_folder + '/bullet.png',
+        'enemy_staying': image_folder + '/enemy.png',
     }
 
     LEVELS = {

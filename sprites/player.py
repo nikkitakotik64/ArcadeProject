@@ -3,6 +3,7 @@ import arcade as ar
 from screen import cell_center
 from game_types import Direction
 from sprites.weapons import StartWeapon, WeaponStatus
+from errors import WrongPlayerDirectionError
 
 
 class PlayerStatus(Enum):
@@ -75,21 +76,22 @@ class Player:
                 self.update_texture(self.status)
 
     def set_direction(self, direction: Direction) -> None:
+        if direction != Direction.right and direction != Direction.left:
+            raise WrongPlayerDirectionError('Player can have only right or left direction')
         self.direction = direction
 
-    def shoot(self) -> tuple[bool, list]:
+    def shoot(self) -> list:
+        bullets = list()
         if self.weapon.can_shoot():
-            bullets = list()
-            for bullet_speed, angle in self.weapon.shoot(self.direction):
+            for bullet_characteristics, angle in self.weapon.shoot(self.direction):
                 x = -1
                 match self.direction:
                     case Direction.right:
                         x = self.sprite.right
                     case Direction.left:
                         x = self.sprite.left
-                bullets.append([x, self.sprite.center_y, bullet_speed, angle, self])
-            return True, bullets
-        return False, []
+                bullets.append([x, self.sprite.center_y, bullet_characteristics, angle])
+        return bullets
 
     def on_update(self, delta_time: float) -> None:
         self.weapon.on_update(delta_time)

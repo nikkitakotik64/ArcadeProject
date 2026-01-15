@@ -28,6 +28,7 @@ class Game(ar.Window):
         self.functional_objects = ar.SpriteList()
         self.decor = ar.SpriteList()
         self.bullets = ar.SpriteList()
+        self.enemies = ar.SpriteList()
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                              data.FILES['player_laying'], self.k / 6, 1, 10)
@@ -36,8 +37,16 @@ class Game(ar.Window):
         self.player_list.append(self.player_sprite)
         self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
                                                          gravity_constant=consts.GRAVITY * self.k)
+        self.enemies_physics = [ar.PhysicsEnginePlatformer(enemy, self.wall_list,
+                                                           gravity_constant=consts.GRAVITY * self.k)
+                                for enemy in self.enemies]
 
         self.data_timer = data.get_data_timer()
+
+    def update_enemies(self) -> None:
+        self.enemies_physics = [ar.PhysicsEnginePlatformer(enemy, self.wall_list,
+                                                           gravity_constant=consts.GRAVITY * self.k)
+                                for enemy in self.enemies]
 
     def update_player_sprite(self) -> None:
         self.player_sprite = self.player.get_sprite()
@@ -48,6 +57,7 @@ class Game(ar.Window):
 
     def on_draw(self) -> None:
         self.clear()
+        self.enemies.draw()
         self.player_list.draw()
         self.bullets.draw()
         self.wall_list.draw()
@@ -81,10 +91,10 @@ class Game(ar.Window):
             self.player.set_status(PlayerStatus.jumping)
 
         if EventsID.shoot in self.events:
-            is_success, bullets = self.player.shoot()
-            if is_success:
-                for x, y, bullet_speed, angle, parent in bullets:
-                    bullet = Bullet(x, y, bullet_speed, angle, 1 / 4, parent)
+            bullets = self.player.shoot()
+            if bullets:
+                for x, y, bullet_characteristics, angle in bullets:
+                    bullet = Bullet(x, y, bullet_characteristics, angle, 1 / 4, [self.player_sprite])
                     self.bullets.append(bullet)
         if EventsID.reload in self.events:
             self.player.reload()
@@ -95,11 +105,25 @@ class Game(ar.Window):
             collision_list = ar.check_for_collision_with_list(bullet, self.wall_list)
             if collision_list:
                 self.bullets.remove(bullet)
+        for enemy in self.enemies:
+            bullets = ar.check_for_collision_with_list(enemy, self.bullets)
+            for bullet in bullets:
+                if enemy in bullet.get_exceptions():
+                    continue
+                enemy.damage(bullet.get_damage())
+                bullet.pierce(enemy)
+                if not bullet.get_damage():
+                    self.bullets.remove(bullet)
+                if not enemy.get_hp():
+                    self.enemies.remove(enemy)
 
     def on_update(self, delta_time: float) -> None:
         self.events_update()
         self.player.on_update(delta_time)
         self.player_physics.update()
+        self.enemies.update()
+        for physics in self.enemies_physics:
+            physics.update()
         self.player_list.update(delta_time)
         self.wall_list.update(delta_time)
         self.bullets_update(delta_time)
@@ -129,7 +153,7 @@ class Game(ar.Window):
         if key == ar.key.R:
             self.events.append(EventsID.reload)
 
-    def on_key_release(self, key: int, modifiers: int) -> None:
+    def on_key_release(self, key: int, _) -> None:
         try:
             if key == ar.key.A:
                 self.events.remove(EventsID.left)

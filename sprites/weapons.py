@@ -2,6 +2,7 @@ from enum import Enum
 from random import randint
 from errors import WeaponCanNotShootError, WrongWeaponDirectionError
 from game_types import Direction
+from screen import CELL_SIDE
 
 
 class WeaponStatus(Enum):
@@ -12,6 +13,28 @@ class WeaponStatus(Enum):
     preparing = 4
 
 
+class BulletCharacteristics:
+    def __init__(self, damage: int, normal_range: float, armor_piercing: int,
+                 bullet_speed: float) -> None:
+        self.damage = damage
+        self.normal_range = normal_range
+        self.armor_piercing = armor_piercing
+        self.bullet_speed = bullet_speed
+
+    def get_damage(self) -> int:
+        return self.damage
+
+    def get_normal_range(self) -> float:
+        return self.normal_range
+
+    def get_armor_piercing(self) -> int:
+        return self.armor_piercing
+
+    def get_bullet_speed(self) -> float:
+        return self.bullet_speed
+
+
+
 class Weapon:
     def __init__(self, count_of_ammo: int, count_of_magazines: int,
                  damage: int, normal_range: float, armor_piercing: int,
@@ -20,16 +43,13 @@ class Weapon:
         self.preparing_time = preparing_time
         self.count_of_ammo = count_of_ammo
         self.magazines_ammo = count_of_magazines * count_of_ammo
-        self.damage = damage
-        self.normal_range = normal_range
-        self.armor_piercing = armor_piercing
         self.now_ammo = count_of_ammo
         self.status = WeaponStatus.preparing
         self.spread_angle = spread_angle
         self.timer = 0
         self.rate_of_fire = rate_of_fire
         self.reloading_time = reloading_time
-        self.bullet_speed = bullet_speed
+        self.bullet_characteristics = BulletCharacteristics(damage, normal_range, armor_piercing, bullet_speed)
 
     def can_shoot(self) -> bool:
         if (self.status == WeaponStatus.reloading or self.status == WeaponStatus.shooting
@@ -40,7 +60,7 @@ class Weapon:
             return False
         return True
 
-    def shoot(self, direction: Direction) -> list[tuple[float, float]]:
+    def shoot(self, direction: Direction) -> list[tuple[BulletCharacteristics, float]]:
         if not self.can_shoot():
             match self.status:
                 case WeaponStatus.shooting:
@@ -57,11 +77,11 @@ class Weapon:
             case Direction.left:
                 self.status = WeaponStatus.shooting
                 self.now_ammo -= 1
-                return [(self.bullet_speed, 180 + randint(-self.spread_angle, self.spread_angle))]
+                return [(self.bullet_characteristics, 180 + randint(-self.spread_angle, self.spread_angle))]
             case Direction.right:
                 self.status = WeaponStatus.shooting
                 self.now_ammo -= 1
-                return [(self.bullet_speed, 0 + randint(-self.spread_angle, self.spread_angle) % 360)]
+                return [(self.bullet_characteristics, 0 + randint(-self.spread_angle, self.spread_angle) % 360)]
 
     def start_reload(self) -> None:
         if not self.magazines_ammo:
@@ -106,7 +126,7 @@ class Weapon:
 
 class StartWeapon(Weapon):
     def __init__(self) -> None:
-        super().__init__(30, 100000, 5, 10, 40,
-                         4, 2.5 / 60, 2.5, 1500, 1.5)
+        super().__init__(50, 100000, 10, CELL_SIDE * 3, 15,
+                         4, 2.5 / 60, 2.5, 1500, 0)
 
 # can be added more weapon
