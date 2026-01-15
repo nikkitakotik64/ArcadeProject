@@ -1,7 +1,6 @@
 import arcade as ar
 from data.savings import data
 from math import sin, cos, pi
-
 from screen import CELL_SIDE
 from sprites.weapons import BulletCharacteristics
 
