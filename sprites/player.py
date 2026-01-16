@@ -14,11 +14,24 @@ class PlayerStatus(Enum):
     laying = 4
 
 
+class PlayerSprite(ar.sprite.Sprite):
+    def __init__(self, texture: str, scale: float) -> None:
+        super().__init__(texture, scale)
+        self.hp = 200
+
+    def get_hp(self) -> float:
+        return self.hp
+
+    def damage(self, damage: float) -> None:
+        self.hp -= damage
+        self.hp = max(0, self.hp)
+
+
 class Player:
     def __init__(self, app, texture_staying: str, texture_siting: str, texture_laying: str,
                  scale: float, row: int, col: int, is_second: bool = False) -> None:
         self.status = PlayerStatus.normal
-        self.sprite = ar.sprite.Sprite(texture_staying, scale)
+        self.sprite = PlayerSprite(texture_staying, scale)
         self.texture_staying = texture_staying
         self.texture_siting = texture_siting
         self.scale = scale
@@ -28,6 +41,10 @@ class Player:
         self.direction = Direction.right
         self.weapon = StartWeapon()
         self.is_second = is_second
+        self.hp = 200
+
+    def get_hp(self) -> float:
+        return self.sprite.get_hp()
 
     def move(self, row: int, col: int) -> None:
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
@@ -35,15 +52,15 @@ class Player:
     def update_texture(self, status: PlayerStatus) -> None:
         if status == PlayerStatus.siting:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
-            self.sprite = ar.sprite.Sprite(self.texture_siting, self.scale)
+            self.sprite = PlayerSprite(self.texture_siting, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
         elif status == PlayerStatus.laying:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
-            self.sprite = ar.sprite.Sprite(self.texture_laying, self.scale)
+            self.sprite = PlayerSprite(self.texture_laying, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
         else:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
-            self.sprite = ar.sprite.Sprite(self.texture_staying, self.scale)
+            self.sprite = PlayerSprite(self.texture_staying, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
         if self.is_second:
             self.app.update_second_player_sprite()

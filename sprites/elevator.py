@@ -5,6 +5,31 @@ from consts import ELEVATOR_DOORS_SPEED
 from enum import Enum
 
 
+class Elevator:
+    def __init__(self, scale: float, pos: int, direction: int, room: int, background: int) -> None:
+        self.direction = direction
+        self.room = room
+        self.walls = []
+        self.doors = []
+        self.mine = ElevatorMine(-1, -1, -1, -1)  # TODO
+        self.button = ElevatorButton(-1, -1, -1, -1, self)  # TODO
+
+    def get_walls(self) -> list[ar.sprite.Sprite]:
+        walls = []
+        for wall in self.walls:
+            wall.append(wall)
+        for door in self.doors:
+            for wall in door.get_block():
+                walls.append(wall)
+        return walls
+
+    def get_mine(self) -> ar.sprite.Sprite:
+        return self.mine
+
+    def get_button(self) -> ar.sprite.Sprite:
+        return self.button
+
+
 class ElevatorDoorStatus(Enum):
     opened = 0
     closed = 1
@@ -88,28 +113,3 @@ class ElevatorMine(ar.sprite.Sprite):
         # super().__init__(texture, scale)
         # self.center_x, self.center_y = cell_center(row, col)
         pass
-
-
-class Elevator:
-    def __init__(self, scale: float, pos: int, direction: int, room: int, background: int) -> None:
-        self.direction = direction
-        self.room = room
-        self.walls = []
-        self.doors = []
-        self.mine = ElevatorMine(-1, -1, -1, -1)  # TODO
-        self.button = ElevatorButton(-1, -1, -1, -1, self)  # TODO
-
-    def get_walls(self) -> list[ar.sprite.Sprite]:
-        walls = []
-        for wall in self.walls:
-            wall.append(wall)
-        for door in self.doors:
-            for wall in door.get_block():
-                walls.append(wall)
-        return walls
-
-    def get_mine(self) -> ar.sprite.Sprite:
-        return self.mine
-
-    def get_button(self) -> ar.sprite.Sprite:
-        return self.button

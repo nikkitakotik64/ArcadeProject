@@ -25,6 +25,7 @@ class Game(ar.Window):
         self.world_walls.add(WorldWall(data.FILES['vert_world_wall'], self.height / 450,
                                        self.width + CELL_SIDE / 2, self.height / 2))
         self.wall_list = ar.SpriteList()
+        self.wall_list.extend(self.world_walls)
         self.functional_objects = ar.SpriteList()
         self.decor = ar.SpriteList()
         self.bullets = ar.SpriteList()
@@ -86,7 +87,7 @@ class Game(ar.Window):
             self.player.set_status(PlayerStatus.falling)
         if not self.player_sprite.change_y and self.player.get_status() == PlayerStatus.falling:
             self.player.set_status(PlayerStatus.normal)
-            
+
         if EventsID.up in self.events and self.player.get_status() == PlayerStatus.normal:
             self.player_sprite.change_y = consts.JUMP_SPEED * self.k
             self.player.set_status(PlayerStatus.jumping)
@@ -97,7 +98,7 @@ class Game(ar.Window):
                 for x, y, bullet_characteristics, angle in bullets:
                     bullet = Bullet(x, y, bullet_characteristics, angle, 1 / 4, [self.player_sprite])
                     self.bullets.append(bullet)
-                    
+
         if EventsID.reload in self.events:
             self.player.reload()
 
@@ -107,7 +108,10 @@ class Game(ar.Window):
             collision_list = ar.check_for_collision_with_list(bullet, self.wall_list)
             if collision_list:
                 self.bullets.remove(bullet)
-        for sprite in self.enemies + self.player_list:
+        sprites = ar.SpriteList()
+        sprites.extend(self.enemies)
+        sprites.append(self.player_sprite)
+        for sprite in sprites:
             bullets = ar.check_for_collision_with_list(sprite, self.bullets)
             for bullet in bullets:
                 if sprite in bullet.get_exceptions():
@@ -117,7 +121,10 @@ class Game(ar.Window):
                 if not bullet.get_damage():
                     self.bullets.remove(bullet)
                 if not sprite.get_hp():
-                    self.enemies.remove(sprite)
+                    try:
+                        self.enemies.remove(sprite)
+                    except ValueError:
+                        print('Player dead')
 
     def on_update(self, delta_time: float) -> None:
         self.events_update()
@@ -187,10 +194,10 @@ class PvP(Game):
     def __init__(self) -> None:
         super().__init__()
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                                    data.FILES['player_laying'], self.k / 6, 1, 12)
-        self.second_player_sprite = self.player.get_sprite()
+                                    data.FILES['player_laying'], self.k / 6, 1, 12, is_second=True)
+        self.second_player_sprite = self.second_player.get_sprite()
         self.second_player_list = ar.SpriteList()
-        self.second_player_list.append(self.player_sprite)
+        self.second_player_list.append(self.second_player_sprite)
         self.second_player_physics = ar.PhysicsEnginePlatformer(self.second_player_sprite, self.wall_list,
                                                                 gravity_constant=consts.GRAVITY * self.k)
 
@@ -235,7 +242,7 @@ class PvP(Game):
                 for x, y, bullet_characteristics, angle in bullets:
                     bullet = Bullet(x, y, bullet_characteristics, angle, 1 / 4, [self.second_player_sprite])
                     self.bullets.append(bullet)
-                    
+
         if EventsID.sec_reload in self.events:
             self.second_player.reload()
 
@@ -254,7 +261,11 @@ class PvP(Game):
             collision_list = ar.check_for_collision_with_list(bullet, self.wall_list)
             if collision_list:
                 self.bullets.remove(bullet)
-        for sprite in self.enemies + self.player_list + self.second_player_list:
+        sprites = ar.SpriteList()
+        sprites.extend(self.enemies)
+        sprites.append(self.player_sprite)
+        sprites.append(self.second_player_sprite)
+        for sprite in sprites:
             bullets = ar.check_for_collision_with_list(sprite, self.bullets)
             for bullet in bullets:
                 if sprite in bullet.get_exceptions():
@@ -266,7 +277,7 @@ class PvP(Game):
                 if not sprite.get_hp():
                     try:
                         self.enemies.remove(sprite)
-                    except Exception:
+                    except ValueError:
                         print('Player dead')
 
     def on_update(self, delta_time: float) -> None:
@@ -278,7 +289,6 @@ class PvP(Game):
         self.enemies.update()
         for physics in self.enemies_physics:
             physics.update()
-        self.player_list.update(delta_time)
         self.wall_list.update(delta_time)
         self.bullets_update(delta_time)
 
@@ -287,25 +297,54 @@ class PvP(Game):
             data.save()
         else:
             self.data_timer -= delta_time
-    
+
     def on_key_press(self, key: int, modifiers: int) -> None:
         super().on_key_press(key, modifiers)
-
-        raise Exception('ne dodelano')
-        # TODO: dodelat`
-        if key == ar.key.W:
-            if self.player.get_status() != PlayerStatus.siting and self.player.get_status() != PlayerStatus.laying:
-                self.events.append(EventsID.up)
+        if key == ar.key.UP:
+            if (self.second_player.get_status() != PlayerStatus.siting
+                    and self.second_player.get_status() != PlayerStatus.laying):
+                self.events.append(EventsID.sec_up)
             else:
-                self.player.up()
-        if key == ar.key.D:
-            self.events.append(EventsID.right)
-        if key == ar.key.A:
-            self.events.append(EventsID.left)
-        if key == ar.key.S:
-            self.player.down()
-        if key == ar.key.SPACE:
-            self.events.append(EventsID.shoot)
-        if key == ar.key.R:
-            self.events.append(EventsID.reload)
-    
+                self.second_player.up()
+        if key == ar.key.RIGHT:
+            self.events.append(EventsID.sec_right)
+        if key == ar.key.LEFT:
+            self.events.append(EventsID.sec_left)
+        if key == ar.key.DOWN:
+            self.second_player.down()
+
+    def on_key_release(self, key: int, _) -> None:
+        super().on_key_release(key, 0)
+        try:
+            if key == ar.key.LEFT:
+                self.events.remove(EventsID.sec_left)
+        except ValueError:
+            pass
+        try:
+            if key == ar.key.RIGHT:
+                self.events.remove(EventsID.sec_right)
+        except ValueError:
+            pass
+        try:
+            if key == ar.key.UP:
+                self.events.remove(EventsID.sec_up)
+        except ValueError:
+            pass
+
+    def on_mouse_press(self, _: int, __: int, button: int, ___: int) -> None:
+        if button == ar.MOUSE_BUTTON_LEFT:
+            self.events.append(EventsID.sec_shoot)
+        if button == ar.MOUSE_BUTTON_RIGHT:
+            self.events.append(EventsID.sec_reload)
+
+    def on_mouse_release(self, _: int, __: int, button: int, ___: int) -> None:
+        try:
+            if button == ar.MOUSE_BUTTON_LEFT:
+                self.events.remove(EventsID.sec_shoot)
+        except ValueError:
+            pass
+        try:
+            if button == ar.MOUSE_BUTTON_RIGHT:
+                self.events.remove(EventsID.sec_reload)
+        except ValueError:
+            pass
