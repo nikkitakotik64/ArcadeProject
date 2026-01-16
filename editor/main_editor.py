@@ -2,18 +2,20 @@ import arcade as ar
 import arcade.gui
 from Scroll_Area import *
 from work_with_levels import *
+from Sub_Windows import AddLevelDialog
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Редактор. Работа с уровнями"
 
-
+# TODO: доделать функционал доп окна и функций, исправить баги
 class Level_Menu(ar.View):
     def __init__(self):
         super().__init__()
         self.manager = ar.gui.UIManager()
         self.level_list = List_of_Levels.get_levels()
         self.create_grid()
+        self.dialog_open = False
 
     def create_grid(self):
         # главный Box для всего окна
@@ -80,6 +82,25 @@ class Level_Menu(ar.View):
         self.create_grid()
 
     def on_add_click(self, event):
+        if self.dialog_open:
+            return
+        self.dialog_open = True
+
+        dialog = AddLevelDialog(
+            width=400,
+            height=200,
+            on_ok_callback=self.on_dialog_ok,
+            on_cancel_callback=self.on_dialog_cancel
+        )
+        self.manager.add(dialog)
+        screen_width, screen_height = self.window.get_size()
+        dialog.center_x = screen_width // 2
+        dialog.center_y = screen_height // 2
+
+    def on_dialog_ok(self, event):
+        pass
+
+    def on_dialog_cancel(self, event):
         pass
 
 
