@@ -16,7 +16,7 @@ class PlayerStatus(Enum):
 
 class Player:
     def __init__(self, app, texture_staying: str, texture_siting: str, texture_laying: str,
-                 scale: float, row: int, col: int) -> None:
+                 scale: float, row: int, col: int, is_second: bool = False) -> None:
         self.status = PlayerStatus.normal
         self.sprite = ar.sprite.Sprite(texture_staying, scale)
         self.texture_staying = texture_staying
@@ -27,6 +27,7 @@ class Player:
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
         self.direction = Direction.right
         self.weapon = StartWeapon()
+        self.is_second = is_second
 
     def move(self, row: int, col: int) -> None:
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
@@ -44,7 +45,10 @@ class Player:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
             self.sprite = ar.sprite.Sprite(self.texture_staying, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
-        self.app.update_player_sprite()
+        if self.is_second:
+            self.app.update_second_player_sprite()
+        else:
+            self.app.update_player_sprite()
 
     def set_status(self, status: PlayerStatus) -> None:
         if self.status == PlayerStatus.siting or self.status == PlayerStatus.laying:
