@@ -16,7 +16,9 @@ class Level_Menu(ar.View):
         self.create_grid()
 
     def create_grid(self):
+        # главный Box для всего окна
         main_layout = ar.gui.UIBoxLayout(vertical=True, space_between=10)
+        # создаем кнопку обновления
         update_list_btn = ar.gui.UIFlatButton(text="Обновить", width=600)
         update_list_btn.on_click = self.on_update_click
         main_layout.add(update_list_btn)
@@ -40,8 +42,13 @@ class Level_Menu(ar.View):
             grid.add(del_btn, column=1, row=i)
         self.scroll_area.add(grid)
         main_layout.add(self.scroll_area)
-        anchor_layout = self.manager.add(ar.gui.UIAnchorLayout())
         self.scroll_area.add(grid)
+        anchor_layout = self.manager.add(ar.gui.UIAnchorLayout())
+        # создаем кнопку добавления
+        add_btn = ar.gui.UIFlatButton(text="Добавить", width = 600)
+        add_btn.on_click = self.on_add_click
+        main_layout.add(add_btn)
+
         anchor_layout.add(
             anchor_x="center_x",
             anchor_y="center_y",
@@ -68,6 +75,11 @@ class Level_Menu(ar.View):
         pass
 
     def on_update_click(self, event):
+        self.manager.clear()
+        self.level_list = List_of_Levels.get_levels()
+        self.create_grid()
+
+    def on_add_click(self, event):
         pass
 
 
