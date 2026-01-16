@@ -69,9 +69,6 @@ class SingleGame(AbstractGame):
             # self.functional_objects.append(elevator.get_button())
             # self.decor.append(elevator.get_mine())
 
-        for wall in self.world_walls:
-            self.wall_list.append(wall)
-
         self.update_player_sprite()
         self.update_enemies()
 
