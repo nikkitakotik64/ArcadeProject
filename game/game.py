@@ -6,13 +6,16 @@ from screen import *
 import arcade as ar
 from sprites.world_wall import WorldWall
 from sprites.player import Player
-from game_types import Direction
+from game_types import Direction, Running
 from sprites.bullet import Bullet
 
 
 class Game(ar.Window):
-    def __init__(self) -> None:
+    def __init__(self, running: Running) -> None:
         super().__init__(1, 1, 'Game', fullscreen=True)
+        self.running = running
+        self.stop = False
+        self.text = ''
         self.k = CELL_SIDE / 16
         self.events = list()
 
@@ -124,9 +127,12 @@ class Game(ar.Window):
                     try:
                         self.enemies.remove(sprite)
                     except ValueError:
-                        print('Player dead')
+                        self.text = 'You are dead'
+                        self.stop = True
 
     def on_update(self, delta_time: float) -> None:
+        if self.stop:
+            return
         self.events_update()
         self.player.on_update(delta_time)
         self.player_physics.update()
@@ -145,7 +151,8 @@ class Game(ar.Window):
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         if key == ar.key.ESCAPE:
-            ar.exit()
+            self.running.set_false()
+            self.close()
         if key == ar.key.W:
             if self.player.get_status() != PlayerStatus.siting and self.player.get_status() != PlayerStatus.laying:
                 self.events.append(EventsID.up)
@@ -160,7 +167,10 @@ class Game(ar.Window):
         if key == ar.key.SPACE:
             self.events.append(EventsID.shoot)
         if key == ar.key.R:
-            self.events.append(EventsID.reload)
+            if self.stop:
+                self.close()
+            else:
+                self.events.append(EventsID.reload)
 
     def on_key_release(self, key: int, _) -> None:
         try:
@@ -191,8 +201,8 @@ class Game(ar.Window):
 
 
 class PvP(Game):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, running: Running) -> None:
+        super().__init__(running)
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                                     data.FILES['player_laying'], self.k / 6, 1, 12, is_second=True)
         self.second_player_sprite = self.second_player.get_sprite()
@@ -254,6 +264,7 @@ class PvP(Game):
         self.bullets.draw()
         self.wall_list.draw()
         self.functional_objects.draw()
+        ar.draw_text(self.text, self.center_x - 12.5 * len(self.text), self.center_y, ar.color.RED, 50)
 
     def bullets_update(self, delta_time: float) -> None:
         for bullet in self.bullets:
@@ -278,9 +289,18 @@ class PvP(Game):
                     try:
                         self.enemies.remove(sprite)
                     except ValueError:
-                        print('Player dead')
+                        self.pause()
+                        if sprite == self.player_sprite:
+                            self.text = 'Second Player Won!'
+                        else:
+                            self.text = 'First Player Won!'
+
+    def pause(self) -> None:
+        self.stop = True
 
     def on_update(self, delta_time: float) -> None:
+        if self.stop:
+            return
         self.events_update()
         self.player.on_update(delta_time)
         self.player_physics.update()

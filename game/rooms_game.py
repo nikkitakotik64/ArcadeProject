@@ -4,15 +4,15 @@ from game.game import Game as AbstractGame
 import arcade as ar
 from sprites.sign import Sign
 from sprites.elevator import Elevator
-from game_types import FunctionalObjectsTypes, Direction
+from game_types import FunctionalObjectsTypes, Direction, Running
 from sprites.enemy import Enemy, EnemyType, EnemyTypeCodes, EnemyDirectionCodes
 from errors import WrongEnemyTypeCodeError, WrongEnemyDirectionCodeError
 from sprites.weapons import StartWeapon
 
 
 class SingleGame(AbstractGame):
-    def __init__(self, level: dict) -> None:
-        super().__init__()
+    def __init__(self, running: Running, level: dict) -> None:
+        super().__init__(running)
         self.level = level
         self.room = 0
         self.elevators = []

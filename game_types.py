@@ -11,3 +11,17 @@ class Direction(Enum):
 class FunctionalObjectsTypes:
     sign = 1
     staying_enemy = 2
+
+
+class Running:
+    def __init__(self) -> None:
+        self.running = True
+
+    def set_false(self) -> None:
+        self.running = False
+
+    def set_true(self) -> None:
+        self.running = True
+
+    def is_running(self) -> bool:
+        return self.running
