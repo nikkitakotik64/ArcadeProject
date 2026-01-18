@@ -44,7 +44,6 @@ class Level_Menu(ar.View):
             grid.add(del_btn, column=1, row=i)
         self.scroll_area.add(grid)
         main_layout.add(self.scroll_area)
-        self.scroll_area.add(grid)
         anchor_layout = self.manager.add(ar.gui.UIAnchorLayout())
         # создаем кнопку добавления
         add_btn = ar.gui.UIFlatButton(text="Добавить", width = 600)
@@ -70,6 +69,7 @@ class Level_Menu(ar.View):
         self.clear()
         self.manager.draw()
 
+
     def on_edit_click(self, event):
         pass
 
@@ -79,7 +79,7 @@ class Level_Menu(ar.View):
     def on_update_click(self, event):
         self.manager.clear()
         self.level_list = List_of_Levels.get_levels()
-        self.create_grid()
+        self.rework_grid()
 
     def on_add_click(self, event):
         if self.dialog_open:
@@ -87,23 +87,27 @@ class Level_Menu(ar.View):
         self.dialog_open = True
 
         dialog = AddLevelDialog(
-            width=400,
-            height=200,
-            on_ok_callback=self.on_dialog_ok,
-            on_cancel_callback=self.on_dialog_cancel
+            title="Добавить новый уровень",
+            on_ok_callback=self._on_dialog_ok,
+            on_cancel_callback=self._on_dialog_cancel
         )
-        self.manager.add(dialog)
-        screen_width, screen_height = self.window.get_size()
-        dialog.center_x = screen_width // 2
-        dialog.center_y = screen_height // 2
 
-    def on_dialog_ok(self, event):
-        pass
+        self.manager.add(dialog, layer=1)
 
-    def on_dialog_cancel(self, event):
-        pass
+    def _on_dialog_ok(self, level_name):
 
+        List_of_Levels.add_level(level_name)
 
+        self.dialog_open = False
+
+    def _on_dialog_cancel(self):
+        """Колбэк при нажатии Cancel в диалоге"""
+        self.dialog_open = False
+
+    def rework_grid(self):
+        for child in list(self.scroll_area.children):
+            self.scroll_area.remove(child)
+        self.create_grid()
 def main():
     window = ar.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=False)
     Level_view = Level_Menu()
