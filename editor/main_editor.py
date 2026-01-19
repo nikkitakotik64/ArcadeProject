@@ -49,6 +49,10 @@ class Level_Menu(ar.View):
         add_btn = ar.gui.UIFlatButton(text="Добавить", width = 600)
         add_btn.on_click = self.on_add_click
         main_layout.add(add_btn)
+        # кнопка возврата в гл.меню
+        back_to_menu_btn = ar.gui.UIFlatButton(text="В Главное меню", width = 600)
+        back_to_menu_btn.on_click = self.on_back_click
+        main_layout.add(back_to_menu_btn)
 
         anchor_layout.add(
             anchor_x="center_x",
@@ -108,6 +112,10 @@ class Level_Menu(ar.View):
         for child in list(self.scroll_area.children):
             self.scroll_area.remove(child)
         self.create_grid()
+
+    def on_back_click(self):
+        pass
+
 def main():
     window = ar.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=False)
     Level_view = Level_Menu()

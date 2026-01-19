@@ -48,9 +48,7 @@ class AddLevelDialog(ar.gui.UIMouseFilterMixin, ar.gui.UIAnchorLayout):
             text_color=ar.color.BLACK,
         )
 
-
         title_label_space = ar.gui.UISpace(height=15, color=ar.color.TRANSPARENT_BLACK)
-
 
         self.level_input = ar.gui.UIInputText(
             text="",
@@ -59,7 +57,6 @@ class AddLevelDialog(ar.gui.UIMouseFilterMixin, ar.gui.UIAnchorLayout):
             font_size=14,
             text_color=ar.color.BLACK,
         ).with_border()
-
 
         button_layout = ar.gui.UIBoxLayout(vertical=False, space_between=20)
 
@@ -72,13 +69,11 @@ class AddLevelDialog(ar.gui.UIMouseFilterMixin, ar.gui.UIAnchorLayout):
         button_layout.add(ok_button)
         button_layout.add(cancel_button)
 
-
         widget_layout = ar.gui.UIBoxLayout(align="left", space_between=10)
         widget_layout.add(title_label)
         widget_layout.add(title_label_space)
         widget_layout.add(self.level_input)
         widget_layout.add(button_layout)
-
 
         frame.add(
             child=widget_layout,
