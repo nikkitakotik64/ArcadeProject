@@ -1,7 +1,6 @@
 import arcade as ar
 import arcade.gui
 
-from Scroll_Area import *
 from work_with_levels import *
 
 SCREEN_WIDTH = 1400
@@ -29,7 +28,6 @@ class RoomEditor(ar.View):
     def setup(self):
         self.manager.clear()
 
-        # Создаем только интерактивные элементы
         # Панель инструментов
         right_panel = ar.gui.UIBoxLayout(vertical=True, space_between=20)
 
@@ -54,7 +52,7 @@ class RoomEditor(ar.View):
     def create_tool_section(self, title, options):
         section = arcade.gui.UIBoxLayout(vertical=True, space_between=10)
         section.with_background(color=ar.color.LIGHT_APRICOT)
-        section.with_border(color=arcade.color.DARK_BROWN)  # Заменяем эту строку
+        section.with_border(color=arcade.color.DARK_BROWN)
         section.with_padding(all=10)
 
         section_title = ar.gui.UILabel(
@@ -106,7 +104,6 @@ class RoomEditor(ar.View):
         # 2. Рисуем сетку
         self.draw_grid()
 
-        # 3. Рисуем GUI элементы
         self.manager.draw()
 
     def draw_grid(self):
@@ -126,7 +123,6 @@ class RoomEditor(ar.View):
         self.grid_pixel_width = grid_pixel_width
         self.grid_pixel_height = grid_pixel_height
 
-        # Черный фон для сетки - используем draw_rect_filled
         grid_rect = ar.rect.XYWH(
             start_x + grid_pixel_width / 2,  # center_x
             start_y + grid_pixel_height / 2,  # center_y
@@ -154,21 +150,6 @@ class RoomEditor(ar.View):
                 ar.color.WHITE, 1
             )
 
-        # # Координаты углов (для отладки)
-        # if self.cell_size > 15:
-        #     # Левый нижний угол
-        #     ar.draw_text(
-        #         "(0, 0)",
-        #         start_x + 5, start_y + 5,
-        #         ar.color.LIGHT_GRAY, 10
-        #     )
-        #     # Правый верхний угол
-        #     ar.draw_text(
-        #         f"({self.grid_width - 1}, {self.grid_height - 1})",
-        #         start_x + grid_pixel_width - 50,
-        #         start_y + grid_pixel_height - 15,
-        #         ar.color.LIGHT_GRAY, 10
-        #     )
 
     def on_mouse_press(self, x, y, button, modifiers):
         pass
