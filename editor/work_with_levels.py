@@ -19,11 +19,12 @@ class List_of_Levels:
         with open(levels_folder + '/system_files' + '/Level_List', "a", encoding="utf-8") as f:
             f.write(f"{level_name};")
 
-        with open(levels_folder + '/system_files' + f'/{level_name}_rooms', "w", encoding="utf-8") as f:
-            pass
+        # with open(levels_folder + '/system_files' + f'/{level_name}_rooms', "w", encoding="utf-8") as f:
+        #     pass
 
         with open(f"{levels_folder}/{level_name}.level", "w", encoding="utf-8") as f:
-            pass
+            line = '{"room": {"walls": [], "decor": [], "functional_objects": []}}'
+            f.write(line)
 
     def get_rooms(self, level_name):
         with open(levels_folder + '/system_files' + f'/{level_name}_rooms', "r", encoding="utf-8") as f:
