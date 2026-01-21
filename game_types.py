@@ -9,8 +9,7 @@ class Direction(Enum):
 
 
 class FunctionalObjectsTypes:
-    sign = 1
-    staying_enemy = 2
+    pass
 
 
 class Running:

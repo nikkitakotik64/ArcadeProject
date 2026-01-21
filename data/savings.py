@@ -1,6 +1,5 @@
 import os
 import json
-from level_types import LevelType
 
 data_folder = os.path.dirname(__file__)
 image_folder = data_folder + '/images'
@@ -18,7 +17,7 @@ class Data:
         'hor_world_wall': image_folder + '/hor_world_wall.png',
         'vert_world_wall': image_folder + '/vert_world_wall.png',
         'bullet': image_folder + '/bullet.png',
-        'enemy_staying': image_folder + '/enemy.png',
+        'start_button': image_folder + '/start_button.png',
     }
 
     LEVELS = {
@@ -39,6 +38,9 @@ class Data:
             level = json.loads(file.read())
         level_type = LevelType(level['type'])
         return level, level_type
+
+    def get_sound_settings(self) -> bool:
+        return True
 
 
 data = Data()

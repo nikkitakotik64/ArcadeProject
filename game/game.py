@@ -6,14 +6,14 @@ from screen import *
 import arcade as ar
 from sprites.world_wall import WorldWall
 from sprites.player import Player
-from game_types import Direction, Running
+from game_types import Direction
 from sprites.bullet import Bullet
+from main import game_settings
 
 
 class Game(ar.Window):
-    def __init__(self, running: Running) -> None:
+    def __init__(self) -> None:
         super().__init__(1, 1, 'Game', fullscreen=True)
-        self.running = running
         self.stop = False
         self.text = ''
         self.k = CELL_SIDE / 16
@@ -44,6 +44,35 @@ class Game(ar.Window):
         self.enemies_physics = [ar.PhysicsEnginePlatformer(enemy, self.wall_list,
                                                            gravity_constant=consts.GRAVITY * self.k)
                                 for enemy in self.enemies]
+
+        self.data_timer = data.get_data_timer()
+
+    def restart(self) -> None:
+        self.stop = False
+        self.text = ''
+        self.events = list()
+
+        self.world_walls = set()
+        self.world_walls.add(WorldWall(data.FILES['hor_world_wall'], self.width / 800, self.width / 2, -2))
+        self.world_walls.add(WorldWall(data.FILES['hor_world_wall'], self.width / 800,
+                                       self.width / 2, self.height + 2))
+        self.world_walls.add(WorldWall(data.FILES['vert_world_wall'], self.height / 450,
+                                       -CELL_SIDE / 2, self.height / 2))
+        self.world_walls.add(WorldWall(data.FILES['vert_world_wall'], self.height / 450,
+                                       self.width + CELL_SIDE / 2, self.height / 2))
+        self.wall_list = ar.SpriteList()
+        self.wall_list.extend(self.world_walls)
+        self.functional_objects = ar.SpriteList()
+        self.decor = ar.SpriteList()
+        self.bullets = ar.SpriteList()
+
+        self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
+                             data.FILES['player_laying'], self.k / 6, 1, 10)
+        self.player_sprite = self.player.get_sprite()
+        self.player_list = ar.SpriteList()
+        self.player_list.append(self.player_sprite)
+        self.player_physics = ar.PhysicsEnginePlatformer(self.player_sprite, self.wall_list,
+                                                         gravity_constant=consts.GRAVITY * self.k)
 
         self.data_timer = data.get_data_timer()
 
@@ -151,8 +180,7 @@ class Game(ar.Window):
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         if key == ar.key.ESCAPE:
-            self.running.set_false()
-            self.close()
+            self.close(False)
         if key == ar.key.W:
             if self.player.get_status() != PlayerStatus.siting and self.player.get_status() != PlayerStatus.laying:
                 self.events.append(EventsID.up)
@@ -168,9 +196,14 @@ class Game(ar.Window):
             self.events.append(EventsID.shoot)
         if key == ar.key.R:
             if self.stop:
-                self.close()
+                self.restart()
             else:
                 self.events.append(EventsID.reload)
+
+    def close(self, ended: bool = True) -> None:
+        if ended:
+            game_settings['running'] = False
+        super().close()
 
     def on_key_release(self, key: int, _) -> None:
         try:
@@ -201,8 +234,8 @@ class Game(ar.Window):
 
 
 class PvP(Game):
-    def __init__(self, running: Running) -> None:
-        super().__init__(running)
+    def __init__(self) -> None:
+        super().__init__()
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                                     data.FILES['player_laying'], self.k / 6, 1, 12, is_second=True)
         self.second_player_sprite = self.second_player.get_sprite()
@@ -210,6 +243,17 @@ class PvP(Game):
         self.second_player_list.append(self.second_player_sprite)
         self.second_player_physics = ar.PhysicsEnginePlatformer(self.second_player_sprite, self.wall_list,
                                                                 gravity_constant=consts.GRAVITY * self.k)
+
+    def restart(self) -> None:
+        super().restart()
+        self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
+                                    data.FILES['player_laying'], self.k / 6, 1, 12, is_second=True)
+        self.second_player_sprite = self.second_player.get_sprite()
+        self.second_player_list = ar.SpriteList()
+        self.second_player_list.append(self.second_player_sprite)
+        self.second_player_physics = ar.PhysicsEnginePlatformer(self.second_player_sprite, self.wall_list,
+                                                                gravity_constant=consts.GRAVITY * self.k)
+
 
     def update_second_player_sprite(self) -> None:
         self.second_player_sprite = self.second_player.get_sprite()
