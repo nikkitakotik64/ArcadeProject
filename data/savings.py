@@ -18,6 +18,10 @@ class Data:
         'vert_world_wall': image_folder + '/vert_world_wall.png',
         'bullet': image_folder + '/bullet.png',
         'start_button': image_folder + '/start_button.png',
+        'editor_button': image_folder + '/editor_button.png',
+        'quit_button': image_folder + '/quit_button.png',
+        'sound_button_enabled': image_folder + '/sound_button_enabled.png',
+        'sound_button_disabled': image_folder + '/sound_button_disabled.png',
     }
 
     LEVELS = {

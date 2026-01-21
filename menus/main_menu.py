@@ -7,8 +7,9 @@ from data.savings import data
 
 class MainMenu(ar.Window):
     k = CELL_SIDE / 16
-    sound_button_enabled = ar.Sprite(data.FILES['sound_button_enabled'], CELL_SIDE / 16)
-    sound_button_disabled = ar.Sprite(data.FILES['sound_button_disabled'], CELL_SIDE / 16)
+    # TODO
+    # sound_button_enabled = ar.Sprite(data.FILES['sound_button_enabled'], CELL_SIDE / 16)
+    # sound_button_disabled = ar.Sprite(data.FILES['sound_button_disabled'], CELL_SIDE / 16)
 
     def __init__(self) -> None:
         super().__init__(1, 1, 'Game', fullscreen=True)
@@ -80,7 +81,7 @@ class MainMenu(ar.Window):
 
     def close(self, ended: bool = True) -> None:
         if ended:
-            game_settings['running'] = False
+            game_settings['running'].set_false()
         super().close()
 
 
