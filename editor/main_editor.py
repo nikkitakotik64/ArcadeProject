@@ -113,8 +113,9 @@ class LevelMenu(ar.View):
             self.scroll_area.remove(child)
         self.create_grid()
 
-    def on_back_click(self):
-        pass
+    def on_back_click(self, event):
+        if self.window:
+            self.window.close(False)
 
 
 class EditorWindow(ar.Window):
