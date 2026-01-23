@@ -90,8 +90,9 @@ class StartGameMenu(ar.Window):
 
     def on_draw(self) -> None:
         self.clear()
-        #self.buttons.draw()
-        self.manager1.draw()
+        self.buttons.draw()
+        if self.changing[0]:
+            self.manager1.draw()
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         if key == ar.key.ESCAPE:
