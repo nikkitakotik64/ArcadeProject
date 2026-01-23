@@ -4,6 +4,7 @@ import json
 data_folder = os.path.dirname(__file__)
 image_folder = data_folder + '/images'
 levels_folder = data_folder + '/levels'
+file_folder = data_folder + '/files'
 # TODO: сделать нормальное чтение и запись в файл
 
 
@@ -22,6 +23,7 @@ class Data:
         'quit_button': image_folder + '/quit_button.png',
         'sound_button_enabled': image_folder + '/sound_button_enabled.png',
         'sound_button_disabled': image_folder + '/sound_button_disabled.png',
+        'sound_settings': file_folder + '/sounds_settings.txt',
     }
 
     LEVELS = {
@@ -43,8 +45,20 @@ class Data:
             return level
 
     def get_sound_settings(self) -> bool:
-        # TODO
-        return True
+        try:
+            with open(self.FILES['sound_settings'], 'r') as file:
+                if file.readline() == '1':
+                    return True
+                return False
+        except FileNotFoundError:
+            return True
+
+    def save_sound_settings(self, value: bool) -> None:
+        with open(self.FILES['sound_settings'], 'w') as file:
+            if value:
+                file.write('1')
+            else:
+                file.write('0')
 
 
 data = Data()

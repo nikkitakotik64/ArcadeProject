@@ -45,6 +45,7 @@ class MainMenu(ar.Window):
 
     def change_sound(self) -> None:
         game_settings['sounds'] = not game_settings['sounds']
+        data.save_sound_settings(game_settings['sounds'])
         if game_settings['sounds']:
             self.sound_button.texture = self.sound_button_enabled.texture
         else:
