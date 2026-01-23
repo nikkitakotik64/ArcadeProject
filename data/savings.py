@@ -24,6 +24,10 @@ class Data:
         'sound_button_enabled': image_folder + '/sound_button_enabled.png',
         'sound_button_disabled': image_folder + '/sound_button_disabled.png',
         'sound_settings': file_folder + '/sounds_settings.txt',
+        'same_button_disabled': image_folder + '/same_button_disabled.png',
+        'same_button_enabled': image_folder + '/same_button_enabled.png',
+        'random_button_disabled': image_folder + '/random_button_disabled.png',
+        'random_button_enabled': image_folder + '/random_button_enabled.png',
     }
 
     LEVELS = {

@@ -1,9 +1,9 @@
-from game.game import PvP as Arena
 from main import game_settings
 import arcade as ar
 from screen import CELL_SIDE, W, H
 from data.savings import data
 from editor.main_editor import main as editor_start
+from menus.start_game_menu import StartGameMenu
 
 
 class MainMenu(ar.Window):
@@ -53,9 +53,8 @@ class MainMenu(ar.Window):
 
     def start_game(self) -> None:
         self.close(False)
-        # TODO
-        # start = StartGameMenu()
-        # start.run()
+        start = StartGameMenu()
+        start.run()
 
     def start_editor(self) -> None:
         self.close(False)

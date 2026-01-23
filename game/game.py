@@ -180,8 +180,7 @@ class Game(ar.Window):
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         if key == ar.key.ESCAPE:
-            # TODO self.close(False)
-            self.close()
+            self.close(False)
         if key == ar.key.W:
             if self.player.get_status() != PlayerStatus.siting and self.player.get_status() != PlayerStatus.laying:
                 self.events.append(EventsID.up)
