@@ -129,7 +129,7 @@ class RoomEditor(ar.View):
             grid_pixel_width,  # width
             grid_pixel_height  # height
         )
-        ar.draw_rect_filled(grid_rect, ar.color.BLACK)
+        ar.draw_rect_filled(grid_rect, ar.color.DARK_PUCE)
 
         # Белые линии сетки
         # Вертикальные линии
