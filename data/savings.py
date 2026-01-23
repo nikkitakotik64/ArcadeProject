@@ -28,6 +28,7 @@ class Data:
         'same_button_enabled': image_folder + '/same_button_enabled.png',
         'random_button_disabled': image_folder + '/random_button_disabled.png',
         'random_button_enabled': image_folder + '/random_button_enabled.png',
+        'player_button': image_folder + '/player_button.png',
     }
 
     LEVELS = {

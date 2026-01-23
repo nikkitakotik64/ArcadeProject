@@ -1,6 +1,6 @@
 from main import game_settings
 import arcade as ar
-from screen import CELL_SIDE, W, H
+from screen import CELL_SIDE, W, H, W_OUTLINE
 from data.savings import data
 from editor.main_editor import main as editor_start
 from menus.start_game_menu import StartGameMenu

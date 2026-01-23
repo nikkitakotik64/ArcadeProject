@@ -1,7 +1,37 @@
 import arcade as ar
+import arcade.gui as gui
 from main import game_settings
 from data.savings import data
 from screen import CELL_SIDE, W_OUTLINE, WIDTH, H_OUTLINE, HEIGHT
+from sprites.weapons import weapons_list
+
+
+def create_tool_section(title: str, options: list[str], x: int, y: int):
+    section = gui.UIBoxLayout(vertical=True, space_between=10, x=x, y=y)
+    section.with_background(color=ar.color.LIGHT_APRICOT)
+    section.with_border(color=ar.color.DARK_BROWN)
+    section.with_padding(all=10)
+
+    section_title = gui.UILabel(
+        text=title,
+        font_size=18,
+        width=250,
+        height=30,
+        align="center",
+        text_color=ar.color.BLACK
+    )
+    section.add(section_title)
+
+    dropdown = gui.UIDropdown(
+        default=options[0],
+        options=options,
+        width=250,
+        height=35,
+    )
+    dropdown.section_title = title
+    section.add(dropdown)
+
+    return section
 
 
 class StartGameMenu(ar.Window):
@@ -15,6 +45,7 @@ class StartGameMenu(ar.Window):
         super().__init__(1, 1, 'Game', fullscreen=True)
         ar.set_background_color(ar.color.DARK_RED)
         self.buttons = ar.SpriteList()
+        self.changing = [False, False]
 
         self.start_button = ar.Sprite(data.FILES['start_button'], self.k)
         self.start_button.center_x = WIDTH / 2 + W_OUTLINE
@@ -33,19 +64,34 @@ class StartGameMenu(ar.Window):
         self.random_button.center_y = HEIGHT / 2 + H_OUTLINE
         self.buttons.append(self.random_button)
 
+        self.first_player = 'Glock-18'
         self.first_player_button = ar.Sprite(data.FILES['player_button'], self.k)
         self.first_player_button.center_x = W_OUTLINE + WIDTH / 8
         self.first_player_button.center_y = H_OUTLINE + HEIGHT / 2
         self.buttons.append(self.first_player_button)
 
+        self.second_player = 'Glock-18'
+        self.second_player_button = ar.Sprite(data.FILES['player_button'], self.k)
+        self.second_player_button.center_x = W_OUTLINE + 7 * WIDTH / 8
+        self.second_player_button.center_y = H_OUTLINE + HEIGHT / 2
+        self.buttons.append(self.second_player_button)
+
+        first_player_selection = create_tool_section(self.first_player, weapons_list,
+                                                     W_OUTLINE + WIDTH / 8, H_OUTLINE + HEIGHT / 2)
+        self.manager1 = gui.UIManager()
+        self.manager1.enable()
+        self.manager1.add(first_player_selection)
+
     def close(self, ended: bool = True) -> None:
         if ended:
+            self.manager1.disable()
             game_settings['running'].set_false()
         super().close()
 
     def on_draw(self) -> None:
         self.clear()
-        self.buttons.draw()
+        #self.buttons.draw()
+        self.manager1.draw()
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         if key == ar.key.ESCAPE:
@@ -71,6 +117,21 @@ class StartGameMenu(ar.Window):
         elif (self.random_button.right >= x >= self.random_button.left
               and self.random_button.top >= y >= self.random_button.bottom):
             self.change_random()
+        elif (self.first_player_button.right >= x >= self.first_player_button.left
+              and self.first_player_button.top >= y >= self.first_player_button.bottom):
+            self.change_first_player()
+        elif (self.second_player_button.right >= x >= self.second_player_button.left
+              and self.second_player_button.top >= y >= self.second_player_button.bottom):
+            self.change_second_player()
+
+    def change_first_player(self) -> None:
+        if self.random:
+            return
+        self.changing[0] = True
+
+    def change_second_player(self) -> None:
+        if self.random and self.same:
+            return
 
     def change_random(self) -> None:
         self.random = not self.random

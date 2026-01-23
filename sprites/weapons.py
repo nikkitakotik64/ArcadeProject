@@ -130,3 +130,4 @@ class StartWeapon(Weapon):
                          4, 2.5 / 60, 2.5, 1500, 0)
 
 # can be added more weapon
+weapons_list = ['Glock-18', 'UMP-45']
