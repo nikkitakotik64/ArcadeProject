@@ -8,8 +8,8 @@ from editor.main_editor import main as editor_start
 
 class MainMenu(ar.Window):
     k = CELL_SIDE / 16
-    sound_button_enabled = ar.Sprite(data.FILES['sound_button_enabled'], CELL_SIDE / 16)
-    sound_button_disabled = ar.Sprite(data.FILES['sound_button_disabled'], CELL_SIDE / 16)
+    sound_button_enabled = ar.Sprite(data.FILES['sound_button_enabled'], CELL_SIDE / 40)
+    sound_button_disabled = ar.Sprite(data.FILES['sound_button_disabled'], CELL_SIDE / 40)
 
     def __init__(self) -> None:
         super().__init__(1, 1, 'Game', fullscreen=True)
@@ -32,11 +32,11 @@ class MainMenu(ar.Window):
         self.buttons.append(self.quit_button)
 
         if game_settings['sounds']:
-            self.sound_button = ar.Sprite(data.FILES['sound_button_enabled'], self.k)
+            self.sound_button = ar.Sprite(data.FILES['sound_button_enabled'], self.k / 2.5)
         else:
-            self.sound_button = ar.Sprite(data.FILES['sound_button_disabled'], self.k)
-        self.sound_button.center_x = W - CELL_SIDE
-        self.sound_button.center_y = H - CELL_SIDE
+            self.sound_button = ar.Sprite(data.FILES['sound_button_disabled'], self.k / 2.5)
+        self.sound_button.center_x = W - CELL_SIDE * 2
+        self.sound_button.center_y = H - CELL_SIDE * 2
         self.buttons.append(self.sound_button)
 
     def on_draw(self) -> None:
