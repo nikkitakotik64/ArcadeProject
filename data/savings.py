@@ -37,13 +37,13 @@ class Data:
     def save(self) -> None:
         pass
 
-    def get_level_info(self, level_id: int) -> tuple[dict, LevelType]:
+    def get_level_info(self, level_id: int):
         with open(self.LEVELS[level_id], 'r') as file:
             level = json.loads(file.read())
-        level_type = LevelType(level['type'])
-        return level, level_type
+            return level
 
     def get_sound_settings(self) -> bool:
+        # TODO
         return True
 
 

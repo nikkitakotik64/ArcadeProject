@@ -1,15 +1,16 @@
-import arcade as ar
 import arcade.gui
-from Scroll_Area import *
-from work_with_levels import *
-from Sub_Windows import AddLevelDialog
+from editor.scroll_Area import *
+from editor.work_with_levels import *
+from editor.sub_Windows import AddLevelDialog
+from main import game_settings
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Редактор. Работа с уровнями"
 
+
 # TODO: доделать функционал доп окна и функций, исправить баги
-class Level_Menu(ar.View):
+class LevelMenu(ar.View):
     def __init__(self):
         super().__init__()
         self.manager = ar.gui.UIManager()
@@ -46,11 +47,11 @@ class Level_Menu(ar.View):
         main_layout.add(self.scroll_area)
         anchor_layout = self.manager.add(ar.gui.UIAnchorLayout())
         # создаем кнопку добавления
-        add_btn = ar.gui.UIFlatButton(text="Добавить", width = 600)
+        add_btn = ar.gui.UIFlatButton(text="Добавить", width=600)
         add_btn.on_click = self.on_add_click
         main_layout.add(add_btn)
         # кнопка возврата в гл.меню
-        back_to_menu_btn = ar.gui.UIFlatButton(text="В Главное меню", width = 600)
+        back_to_menu_btn = ar.gui.UIFlatButton(text="В Главное меню", width=600)
         back_to_menu_btn.on_click = self.on_back_click
         main_layout.add(back_to_menu_btn)
 
@@ -72,7 +73,6 @@ class Level_Menu(ar.View):
     def on_draw(self):
         self.clear()
         self.manager.draw()
-
 
     def on_edit_click(self, event):
         pass
@@ -116,10 +116,21 @@ class Level_Menu(ar.View):
     def on_back_click(self):
         pass
 
+
+class EditorWindow(ar.Window):
+    def __init__(self, screen_width, screen_height, screen_title, resizable=True):
+        super().__init__(screen_width, screen_height, screen_title, resizable)
+
+    def close(self, ended: bool = True) -> None:
+        if ended:
+            game_settings['running'].set_false()
+        super().close()
+
+
 def main():
-    window = ar.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=False)
-    Level_view = Level_Menu()
-    window.show_view(Level_view)
+    window = EditorWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=False)
+    level_view = LevelMenu()
+    window.show_view(level_view)
     ar.run()
 
 

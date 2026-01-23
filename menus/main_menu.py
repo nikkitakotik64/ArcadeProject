@@ -3,16 +3,17 @@ from main import game_settings
 import arcade as ar
 from screen import CELL_SIDE, W, H
 from data.savings import data
+from editor.main_editor import main as editor_start
 
 
 class MainMenu(ar.Window):
     k = CELL_SIDE / 16
-    # TODO
-    # sound_button_enabled = ar.Sprite(data.FILES['sound_button_enabled'], CELL_SIDE / 16)
-    # sound_button_disabled = ar.Sprite(data.FILES['sound_button_disabled'], CELL_SIDE / 16)
+    sound_button_enabled = ar.Sprite(data.FILES['sound_button_enabled'], CELL_SIDE / 16)
+    sound_button_disabled = ar.Sprite(data.FILES['sound_button_disabled'], CELL_SIDE / 16)
 
     def __init__(self) -> None:
         super().__init__(1, 1, 'Game', fullscreen=True)
+        ar.set_background_color(ar.color.DARK_RED)
         self.buttons = ar.SpriteList()
 
         self.start_button = ar.Sprite(data.FILES['start_button'], self.k)
@@ -45,9 +46,9 @@ class MainMenu(ar.Window):
     def change_sound(self) -> None:
         game_settings['sounds'] = not game_settings['sounds']
         if game_settings['sounds']:
-            self.sound_button.texture = self.sound_button_enabled
+            self.sound_button.texture = self.sound_button_enabled.texture
         else:
-            self.sound_button.texture = self.sound_button_disabled
+            self.sound_button.texture = self.sound_button_disabled.texture
 
     def start_game(self) -> None:
         self.close(False)
@@ -57,9 +58,7 @@ class MainMenu(ar.Window):
 
     def start_editor(self) -> None:
         self.close(False)
-        # TODO
-        # editor = Editor()
-        # editor.run()
+        editor_start()
 
     def click(self, x: float, y: float) -> None:
         if (self.start_button.right >= x >= self.start_button.left
@@ -87,7 +86,7 @@ class MainMenu(ar.Window):
 
 def main():
     while game_settings['running'].is_running():
-        game = Arena()
+        game = MainMenu()
         game.run()
 
 
