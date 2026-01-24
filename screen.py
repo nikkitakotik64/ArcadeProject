@@ -7,6 +7,8 @@ WIDTH = CELL_SIDE * CELL_W
 HEIGHT = CELL_SIDE * CELL_H
 W_OUTLINE = W - WIDTH
 H_OUTLINE = H - HEIGHT
+W_OUTLINE /= 2
+H_OUTLINE /= 2
 
 # W, H - размеры окна
 # CELL_SIDE - размер одной клетки

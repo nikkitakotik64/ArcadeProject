@@ -5,7 +5,6 @@ data_folder = os.path.dirname(__file__)
 image_folder = data_folder + '/images'
 levels_folder = data_folder + '/levels'
 file_folder = data_folder + '/files'
-# TODO: сделать нормальное чтение и запись в файл
 
 
 class Data:
