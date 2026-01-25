@@ -12,7 +12,13 @@ class Data:
         'player_staying': image_folder + '/player.png',
         'player_siting': image_folder + '/sit.png',
         'player_laying': image_folder + '/lay.png',
-        'wall-1': image_folder + '/wall.png',  # тестовая стена без текстуры !
+        'wall-1': image_folder + '/wall.png',  # тестовая стена без текстуры, станет кирпичной!
+        'wall-2': image_folder + '/wall2.png', # будет металлическая(если будет)
+        'torch': image_folder + '/torch.png',
+        'tree': image_folder + '/tree.png',
+        'vase': image_folder + '/vase.png',
+        'door': image_folder + '/door.png',
+        'chest': image_folder + '/chest.png',
         'data': data_folder + '/data.game',
         'hor_world_wall': image_folder + '/hor_world_wall.png',
         'vert_world_wall': image_folder + '/vert_world_wall.png',

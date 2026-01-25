@@ -2,20 +2,64 @@ import arcade as ar
 import arcade.gui
 
 from work_with_levels import *
+from data.savings import data
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Редактор комнаты"
 
+OBJECT_TYPES = {
+    "walls": "Стены",
+    "decor": "Декор",
+    "functional_objects": "Функциональные"
+}
+
+TEXTURE_MAP = {
+    "Кирпичная": "wall-1",
+    "Металлическая": "wall-2",
+    "Факел": "torch",
+    "Дерево": "tree",
+    "Ваза": "vase",
+    "Сундук": "chest",
+    "Дверь": "door"
+}
+
+TEXTURE_TO_NAME = {
+    "wall-1": "Кирпичная",
+    "wall-2": "Металлическая",
+    "torch": "Факел",
+    "tree": "Дерево",
+    "vase": "Ваза",
+    "chest": "Сундук",
+    "door": "Дверь"
+}
+
 class RoomEditor(ar.View):
-    def __init__(self):
+    def __init__(self, level_name="Test_level.level"):
         super().__init__()
+        self.level_name = level_name
         self.grid_width = 48
         self.grid_height = 27
         self.cell_size = 20
         self.selected_tool = None
-        self.selected_option = None
+        self.texture_id = None
+        self.option_name = None
         self.manager = arcade.gui.UIManager()
+
+        self.walls = []
+        self.decor = []
+        self.functional = []
+        self.background = 1
+
+        self.textures = {}
+        self.load_textures()
+
+        self.walls, self.decor, self.functional = load_level(level_name)
+
+    def load_textures(self):
+        for key, id in TEXTURE_MAP.items():
+            if id in data.FILES:
+                self.textures[id] = ar.load_texture(data.FILES[id])
 
     def on_show_view(self):
         ar.set_background_color(arcade.color.DARK_SLATE_GRAY)
@@ -38,6 +82,14 @@ class RoomEditor(ar.View):
         right_panel.add(decor_section)
         functional_section = self.create_tool_section("Функциональные", ["Сундук", "Дверь"])
         right_panel.add(functional_section)
+
+        save_button = ar.gui.UIFlatButton(
+            text="Сохранить уровень",
+            width=250,
+            height=50,
+        )
+        save_button.on_click = self.on_save_click
+        right_panel.add(save_button)
 
         # Позиционируем панель в правой части
         container = ar.gui.UIAnchorLayout()
@@ -86,8 +138,22 @@ class RoomEditor(ar.View):
 
         return section
 
-    def on_tool_select(self):
-        pass
+    def on_tool_select(self, event):
+        """Какой инструмент выбран"""
+        button = event.source
+        section_title = button.section_title
+        selected_option = button.dropdown.value
+
+        if section_title == "Стены":
+            self.selected_tool = "walls"
+        elif section_title == "Декор":
+            self.selected_tool = "decor"
+        elif section_title == "Функциональные":
+            self.selected_tool = "functional_objects"
+
+        self.texture_id = TEXTURE_MAP[selected_option]
+        self.option_name = selected_option
+
 
     def on_draw(self):
         self.clear()
@@ -150,6 +216,8 @@ class RoomEditor(ar.View):
                 ar.color.WHITE, 1
             )
 
+    def on_save_click(self):
+        pass
 
     def on_mouse_press(self, x, y, button, modifiers):
         pass
