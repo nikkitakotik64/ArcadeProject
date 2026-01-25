@@ -28,7 +28,7 @@ def add_level(level_name):
 #     return level_list
 
 def load_level(level_name):
-    path = levels_folder + level_name
+    path = levels_folder + '/' + level_name
     if os.path.getsize(path) > 0:
         with open(path, "r", encoding="utf-8") as f:
             level_data = json.load(f)
