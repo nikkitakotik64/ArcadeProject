@@ -7,8 +7,8 @@ from sprites.weapons import BulletCharacteristics
 
 class Bullet(ar.sprite.Sprite):
     def __init__(self, x: float, y: float, characteristics: BulletCharacteristics,
-                 angle: float, scale: float, exceptions: list[ar.sprite.Sprite]) -> None:
-        super().__init__(data.FILES['bullet'], scale)
+                 angle: float, scale: float, exceptions: list[ar.sprite.Sprite], texture: str = data.FILES['bullet']) -> None:
+        super().__init__(texture, scale)
         self.speed = characteristics.get_bullet_speed()
         self.range = characteristics.get_normal_range()
         self.damage = characteristics.get_damage()
@@ -37,3 +37,10 @@ class Bullet(ar.sprite.Sprite):
 
     def get_exceptions(self) -> list[ar.sprite.Sprite]:
         return self.exceptions
+
+
+
+class ShotgunBullet(Bullet):
+    def __init__(self, x: float, y: float, characteristics: BulletCharacteristics,
+                 angle: float, scale: float, exceptions: list[ar.sprite.Sprite]) -> None:
+        super().__init__(x, y, characteristics, angle, scale, exceptions, data.FILES['shotgun_bullet'])

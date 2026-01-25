@@ -43,6 +43,9 @@ class Player:
         self.is_second = is_second
         self.hp = 200
 
+    def get_weapon(self) -> Weapon:
+        return self.weapon
+
     def get_hp(self) -> float:
         return self.sprite.get_hp()
 

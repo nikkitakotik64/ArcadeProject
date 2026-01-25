@@ -36,6 +36,7 @@ class Data:
         'random_button_editor': image_folder + '/random_button_editor.png',
         'random_button_standard': image_folder + '/random_button_standard.png',
         'player_button': image_folder + '/player_button.png',
+        'shotgun_bullet': image_folder + '/shotgun_bullet.png',
     }
 
     LEVELS = {

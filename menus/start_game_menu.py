@@ -5,6 +5,7 @@ from data.savings import data
 from screen import CELL_SIDE, W_OUTLINE, WIDTH, H_OUTLINE, HEIGHT
 from sprites.weapons import weapons_list
 from game.game import PvP as Game
+from game_types import Running
 
 changing = [False, False]
 
@@ -25,7 +26,7 @@ def create_tool_section(title: str, options: list[str], x: int, y: int, width: i
     )
     section.add(section_title)
 
-    fnt_size = CELL_SIDE // 16 * 10
+    fnt_size = CELL_SIDE // 16 * 9
     dropdown_style = {
         "normal": gui.UIFlatButton.UIStyle(bg=ar.color.BLACK, font_color=ar.color.DARK_RED, font_size=fnt_size),
         "hover": gui.UIFlatButton.UIStyle(bg=(80, 80, 80), font_color=ar.color.DARK_RED, font_size=fnt_size),
@@ -41,7 +42,7 @@ def create_tool_section(title: str, options: list[str], x: int, y: int, width: i
         default=options[0],
         options=options,
         width=80 * k,
-        height=15 * k,
+        height=13 * k,
         primary_style=active_dropdown_style,
         dropdown_style=dropdown_style,
         active_style=active_dropdown_style,
@@ -72,6 +73,7 @@ class StartGameMenu(ar.Window):
 
     def __init__(self) -> None:
         self.k = CELL_SIDE / 16
+        self.stop = False
         super().__init__(1, 1, 'Game', fullscreen=True)
         self.editor_levels = ['level hz']  # TODO
         ar.set_background_color(ar.color.DARK_RED)
@@ -130,6 +132,8 @@ class StartGameMenu(ar.Window):
         self.manager.add(lay)
 
     def on_update(self, _: float) -> None:
+        if self.stop:
+            return
         if self.same:
             self.manager2.disable()
             self.second_dropdown.value = self.first_dropdown.value
@@ -137,9 +141,10 @@ class StartGameMenu(ar.Window):
             self.manager2.enable()
 
     def close(self, ended: bool = True) -> None:
+        self.manager1.disable()
+        self.manager2.disable()
+        self.manager.disable()
         if ended:
-            self.manager1.disable()
-            self.manager2.disable()
             game_settings['running'].set_false()
         super().close()
 
@@ -155,6 +160,7 @@ class StartGameMenu(ar.Window):
             self.close(False)
 
     def start_game(self) -> None:
+        self.close(False)
         first_player = self.first_dropdown.value
         second_player = self.second_dropdown.value
         match self.random:
@@ -166,7 +172,10 @@ class StartGameMenu(ar.Window):
                 level = 'Random_editor'
             case 3:
                 level = ''  # TODO
-        game = Game(first_player, second_player, self.same, level)
+        self.stop = True
+        restart = Running()
+        restart.set_false()
+        game = Game(first_player, second_player, self.same, level, restart)
         game.run()
 
     def change_same(self) -> None:

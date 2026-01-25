@@ -7,9 +7,9 @@ import arcade as ar
 from sprites.world_wall import WorldWall
 from sprites.player import Player
 from game_types import Direction
-from sprites.bullet import Bullet
+from sprites.bullet import Bullet, ShotgunBullet
 from main import game_settings
-from sprites.weapons import weapons_dict, weapons_list
+from sprites.weapons import weapons_dict, weapons_list, Shotgun
 from random import choice
 
 
@@ -131,9 +131,14 @@ class Game(ar.Window):
         if EventsID.shoot in self.events:
             bullets = self.player.shoot()
             if bullets:
-                for x, y, bullet_characteristics, angle in bullets:
-                    bullet = Bullet(x, y, bullet_characteristics, angle, 1 / 4, [self.player_sprite])
-                    self.bullets.append(bullet)
+                if isinstance(self.player.get_weapon(), Shotgun):
+                    for x, y, bullet_characteristics, angle in bullets:
+                        bullet = ShotgunBullet(x, y, bullet_characteristics, angle, self.k / 12, [self.player_sprite])
+                        self.bullets.append(bullet)
+                else:
+                    for x, y, bullet_characteristics, angle in bullets:
+                        bullet = Bullet(x, y, bullet_characteristics, angle, self.k / 12, [self.player_sprite])
+                        self.bullets.append(bullet)
 
         if EventsID.reload in self.events:
             self.player.reload()
@@ -238,7 +243,8 @@ class Game(ar.Window):
 
 
 class PvP(Game):
-    def __init__(self, first_player_weapon: str, second_player_weapon: str, same_weapons: bool, level: str) -> None:
+    def __init__(self, first_player_weapon: str, second_player_weapon: str, same_weapons: bool, level: str,
+                 restart) -> None:
         self.first_player_weapon_mode = first_player_weapon
         if first_player_weapon == 'Random':
             self.first_player_weapon = choice(weapons_list)
@@ -254,6 +260,7 @@ class PvP(Game):
             self.second_player_weapon_mode = second_player_weapon
             self.second_player_weapon = second_player_weapon
         super().__init__(self.first_player_weapon)
+        self.restart = restart
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                                     data.FILES['player_laying'], self.k / 6, 1, 12,
                                     weapons_dict[self.second_player_weapon](), is_second=True)
@@ -283,7 +290,6 @@ class PvP(Game):
         self.second_player_list.append(self.second_player_sprite)
         self.second_player_physics = ar.PhysicsEnginePlatformer(self.second_player_sprite, self.wall_list,
                                                                 gravity_constant=consts.GRAVITY * self.k)
-
 
     def update_second_player_sprite(self) -> None:
         self.second_player_sprite = self.second_player.get_sprite()
@@ -323,16 +329,21 @@ class PvP(Game):
         if EventsID.sec_shoot in self.events:
             bullets = self.second_player.shoot()
             if bullets:
-                for x, y, bullet_characteristics, angle in bullets:
-                    bullet = Bullet(x, y, bullet_characteristics, angle, 1 / 4, [self.second_player_sprite])
-                    self.bullets.append(bullet)
+                if isinstance(self.second_player.get_weapon(), Shotgun):
+                    for x, y, bullet_characteristics, angle in bullets:
+                        bullet = ShotgunBullet(x, y, bullet_characteristics, angle, self.k / 12,
+                                               [self.second_player_sprite])
+                        self.bullets.append(bullet)
+                else:
+                    for x, y, bullet_characteristics, angle in bullets:
+                        bullet = Bullet(x, y, bullet_characteristics, angle, self.k / 12, [self.second_player_sprite])
+                        self.bullets.append(bullet)
 
         if EventsID.sec_reload in self.events:
             self.second_player.reload()
 
     def on_draw(self) -> None:
         self.clear()
-        self.enemies.draw()
         self.player_list.draw()
         self.second_player_list.draw()
         self.bullets.draw()
@@ -356,18 +367,13 @@ class PvP(Game):
                 if sprite in bullet.get_exceptions():
                     continue
                 sprite.damage(bullet.get_damage())
-                bullet.pierce(sprite)
-                if not bullet.get_damage():
-                    self.bullets.remove(bullet)
+                self.bullets.remove(bullet)
                 if not sprite.get_hp():
-                    try:
-                        self.enemies.remove(sprite)
-                    except ValueError:
-                        self.pause()
-                        if sprite == self.player_sprite:
-                            self.text = 'Second Player Won!'
-                        else:
-                            self.text = 'First Player Won!'
+                    self.stop = True
+                    if sprite == self.player_sprite:
+                        self.text = 'Second Player Won!'
+                    else:
+                        self.text = 'First Player Won!'
 
     def pause(self) -> None:
         self.stop = True
@@ -380,7 +386,6 @@ class PvP(Game):
         self.player_physics.update()
         self.second_player.on_update(delta_time)
         self.second_player_physics.update()
-        self.enemies.update()
         for physics in self.enemies_physics:
             physics.update()
         self.wall_list.update(delta_time)
