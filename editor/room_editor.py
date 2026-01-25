@@ -169,6 +169,10 @@ class RoomEditor(ar.View):
 
         # 2. Рисуем сетку
         self.draw_grid()
+        # 3. Обьекты этой сетки
+        self.draw_objects()
+        # 4. Отрисовываем выбранный инструмент
+        self.draw_selected_tool()
 
         self.manager.draw()
 
@@ -215,18 +219,131 @@ class RoomEditor(ar.View):
                 start_x + grid_pixel_width, line_y,
                 ar.color.WHITE, 1
             )
+    def draw_objects(self):
+        for wall in self.walls:
+            self.draw_object(wall, "walls")
+        for decor in self.decor:
+            self.draw_object(decor, "decor")
+        for functional in self.functional:
+            self.draw_object(functional, "functional_objects")
 
-    def on_save_click(self):
+    def draw_object(self, obj_data, obj_type):
+        row = obj_data.get("row", 0)
+        col = obj_data.get("col", 0)
+        texture_id = obj_data.get("texture_id", "")
+
+        texture = self.textures.get(texture_id)
+        if texture:
+            x = self.grid_start_x + col * self.cell_size + self.cell_size // 2
+            y = self.grid_start_y + row * self.cell_size + self.cell_size // 2
+            scale = self.cell_size / max(texture.width, texture.height) * 0.8
+            border_color = ar.color.RED if obj_type == "walls" else (
+                ar.color.GREEN if obj_type == "decor" else ar.color.BLUE
+            )
+            ar.draw_rectangle_outline(
+                center_x=x, center_y=y, width=self.cell_size * 0.9, height=self.cell_size * 0.9,
+                color=border_color, border_width=1
+            )
+            texture.draw_scaled(x, y, scale)
+
+    def draw_selected_tool(self):
+        if self.selected_tool and self.option_name:
+            text = f"Выбран: {self.option_name}"
+            color = ar.color.RED if self.selected_tool == "walls" else (
+                    ar.color.GREEN if self.selected_tool == "decor" else ar.color.BLUE
+                )
+            ar.draw_text(
+                text, SCREEN_WIDTH * 0.15, SCREEN_HEIGHT - 30, color, 18, anchor_x="center", bold=True
+            )
+
+    def on_save_click(self, event):
         pass
 
     def on_mouse_press(self, x, y, button, modifiers):
-        pass
+        if not self.is_mouse_in_grid(x, y):
+            return
+        cell = self.get_cell_from_mouse(x, y)
+        if not cell:
+            return
+        row, col = cell
+        if button == ar.MOUSE_BUTTON_LEFT and self.selected_tool:
+            self.add_object(row, col)
+        elif button == ar.MOUSE_BUTTON_RIGHT:
+            self.remove_object(row, col)
 
-    def is_mouse_in_grid(self, mouse_x, mouse_y):
-        pass
+    def is_mouse_in_grid(self, mouse_x, mouse_y) -> bool:
+        if not hasattr(self, "grid_start_x"):
+            return False
+
+        return (self.grid_start_x <= mouse_x <= self.grid_start_x + self.grid_pixel_width and
+                self.grid_start_y <= mouse_y <= self.grid_start_y + self.grid_pixel_height)
 
     def get_cell_from_mouse(self, mouse_x, mouse_y):
-        pass
+        if not self.is_mouse_in_grid(mouse_x, mouse_y):
+            return None
+        col = int((mouse_x - self.grid_start_x) // self.cell_size)
+        row = int((mouse_y - self.grid_start_y) // self.cell_size)
+
+        if 0 <= col < self.grid_width and 0 <= row < self.grid_height:
+            return (row, col)
+        return None
+
+    def add_object(self, row, col):
+        """Добавление обьекта в указанную клетку"""
+        if not self.selected_tool or not self.selected_texture_id:
+            return
+
+        obj_data = {
+            "row": row,
+            "col": col,
+            "texture_id": self.texture_id
+        }
+
+        if self.selected_tool == "walls":
+            for obj in self.functional_objects:
+                if obj["row"] == row and obj["col"] == col:
+                    return
+            self.walls = [w for w in self.walls if not (w["row"] == row and w["col"] == col)]
+            self.walls.append(obj_data)
+
+        elif self.selected_tool == "functional_objects":
+            for obj in self.walls:
+                if obj["row"] == row and obj["col"] == col:
+                    return
+            self.functional = [f for f in self.functional_objects if not (f["row"] == row and f["col"] == col)]
+            self.functional.append(obj_data)
+
+        elif self.selected_tool == "decor":
+            self.decor = [d for d in self.decor if not (d["row"] == row and d["col"] == col)]
+            self.decor.append(obj_data)
+
+    def remove_object(self, row, col):
+        """Удаление объекта из указанной клетки"""
+        removed = False
+
+        # Удаляем стену
+        for i, obj in enumerate(self.walls):
+            if obj["row"] == row and obj["col"] == col:
+                del self.walls[i]
+                removed = True
+                break
+
+        # Удаляем декор
+        for i, obj in enumerate(self.decor):
+            if obj["row"] == row and obj["col"] == col:
+                del self.decor[i]
+                removed = True
+                break
+
+        # Удаляем функциональный объект
+        for i, obj in enumerate(self.functional):
+            if obj["row"] == row and obj["col"] == col:
+                del self.functional_objects[i]
+                removed = True
+                break
+
+        # if not removed:
+        #     print(f"В клетке ({row}, {col}) нет объектов")
 
 def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=False)
