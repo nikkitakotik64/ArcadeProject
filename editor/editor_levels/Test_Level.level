@@ -1,0 +1,247 @@
+{
+  "walls": [
+    {
+      "row": 13,
+      "col": 14,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 12,
+      "col": 13,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 11,
+      "col": 12,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 10,
+      "col": 13,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 9,
+      "col": 14,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 9,
+      "col": 15,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 10,
+      "col": 16,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 12,
+      "col": 16,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 11,
+      "col": 17,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 13,
+      "col": 15,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 11,
+      "col": 18,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 12,
+      "col": 19,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 13,
+      "col": 20,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 13,
+      "col": 21,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 12,
+      "col": 22,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 11,
+      "col": 23,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 10,
+      "col": 19,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 9,
+      "col": 20,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 9,
+      "col": 21,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 10,
+      "col": 22,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 14,
+      "col": 16,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 15,
+      "col": 16,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 14,
+      "col": 19,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 15,
+      "col": 19,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 9,
+      "col": 17,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 9,
+      "col": 18,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 8,
+      "col": 17,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 8,
+      "col": 18,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 7,
+      "col": 17,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 7,
+      "col": 18,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 6,
+      "col": 17,
+      "texture_id": "wall-1"
+    },
+    {
+      "row": 6,
+      "col": 18,
+      "texture_id": "wall-1"
+    }
+  ],
+  "decor": [
+    {
+      "row": 15,
+      "col": 16,
+      "texture_id": "torch"
+    },
+    {
+      "row": 15,
+      "col": 19,
+      "texture_id": "torch"
+    },
+    {
+      "row": 14,
+      "col": 19,
+      "texture_id": "torch"
+    },
+    {
+      "row": 14,
+      "col": 16,
+      "texture_id": "torch"
+    },
+    {
+      "row": 11,
+      "col": 14,
+      "texture_id": "torch"
+    },
+    {
+      "row": 11,
+      "col": 15,
+      "texture_id": "torch"
+    },
+    {
+      "row": 11,
+      "col": 20,
+      "texture_id": "torch"
+    },
+    {
+      "row": 11,
+      "col": 21,
+      "texture_id": "torch"
+    },
+    {
+      "row": 6,
+      "col": 17,
+      "texture_id": "torch"
+    },
+    {
+      "row": 5,
+      "col": 17,
+      "texture_id": "torch"
+    },
+    {
+      "row": 5,
+      "col": 18,
+      "texture_id": "torch"
+    },
+    {
+      "row": 6,
+      "col": 18,
+      "texture_id": "torch"
+    },
+    {
+      "row": 15,
+      "col": 17,
+      "texture_id": "tree"
+    },
+    {
+      "row": 15,
+      "col": 18,
+      "texture_id": "tree"
+    },
+    {
+      "row": 14,
+      "col": 17,
+      "texture_id": "tree"
+    },
+    {
+      "row": 14,
+      "col": 18,
+      "texture_id": "tree"
+    }
+  ],
+  "functional_objects": []
+}

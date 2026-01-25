@@ -314,7 +314,8 @@ class RoomEditor(ar.View):
 
     def on_save_click(self, event):
         """Сохранение уровня в файл"""
-        pass
+        self.update_data_from_sprites()
+        save_room(self.walls_data, self.decor_data, self.functional_data, self.level_name)
 
     def update_data_from_sprites(self):
         """Обновляет данные из спрайтов перед сохранением"""

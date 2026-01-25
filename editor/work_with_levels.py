@@ -22,11 +22,6 @@ def add_level(level_name):
         # f.write(line)
         pass
 
-# def get_rooms(level_name):
-#     with open(levels_folder + '/system_files' + f'/{level_name}_rooms', "r", encoding="utf-8") as f:
-#         level_list = f.readline().strip().split(";")[:-1]
-#     return level_list
-
 def load_level(level_name):
     path = levels_folder + '/' + level_name
     if os.path.getsize(path) > 0:
@@ -43,3 +38,12 @@ def load_level(level_name):
 
     return walls, decor, functional_objects
 
+def save_room(walls, decor, functional_objects, level_name):
+    level_data = {
+        "walls": walls,
+        "decor": decor,
+        "functional_objects": functional_objects
+    }
+    path = levels_folder + "/" + level_name
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(level_data, f, ensure_ascii=False, indent=2)
