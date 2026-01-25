@@ -2,7 +2,7 @@ from enum import Enum
 import arcade as ar
 from screen import cell_center
 from game_types import Direction
-from sprites.weapons import StartWeapon, WeaponStatus
+from sprites.weapons import Weapon
 from errors import WrongPlayerDirectionError
 
 
@@ -29,7 +29,7 @@ class PlayerSprite(ar.sprite.Sprite):
 
 class Player:
     def __init__(self, app, texture_staying: str, texture_siting: str, texture_laying: str,
-                 scale: float, row: int, col: int, is_second: bool = False) -> None:
+                 scale: float, row: int, col: int, weapon: Weapon, is_second: bool = False) -> None:
         self.status = PlayerStatus.normal
         self.sprite = PlayerSprite(texture_staying, scale)
         self.texture_staying = texture_staying
@@ -39,7 +39,7 @@ class Player:
         self.texture_laying = texture_laying
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
         self.direction = Direction.right
-        self.weapon = StartWeapon()
+        self.weapon = weapon
         self.is_second = is_second
         self.hp = 200
 
@@ -116,8 +116,6 @@ class Player:
 
     def on_update(self, delta_time: float) -> None:
         self.weapon.on_update(delta_time)
-        if self.weapon.get_status() == WeaponStatus.no_ammo:
-            self.weapon = StartWeapon()
 
     def reload(self) -> None:
         self.weapon.start_reload()

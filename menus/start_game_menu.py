@@ -4,6 +4,7 @@ from main import game_settings
 from data.savings import data
 from screen import CELL_SIDE, W_OUTLINE, WIDTH, H_OUTLINE, HEIGHT
 from sprites.weapons import weapons_list
+from game.game import PvP as Game
 
 changing = [False, False]
 
@@ -94,9 +95,6 @@ class StartGameMenu(ar.Window):
         self.random_button.center_y = HEIGHT / 2 + H_OUTLINE
         self.buttons.append(self.random_button)
 
-        self.first_player = 'Random'
-        self.second_player = 'Random'
-
         first_player_selection, self.first_dropdown = create_tool_section('First player', ['Random'] + weapons_list,
                                                                           W_OUTLINE + WIDTH / 8 - 128 * self.k / 2,
                                                                           H_OUTLINE + HEIGHT / 2 - 345 * self.k / 2,
@@ -131,11 +129,10 @@ class StartGameMenu(ar.Window):
         self.manager.enable()
         self.manager.add(lay)
 
-    def on_update(self, delta_time: float) -> None:
-        self.first_player = self.first_dropdown.value
-        self.second_player = self.second_dropdown.value
+    def on_update(self, _: float) -> None:
         if self.same:
             self.manager2.disable()
+            self.second_dropdown.value = self.first_dropdown.value
         else:
             self.manager2.enable()
 
@@ -158,7 +155,19 @@ class StartGameMenu(ar.Window):
             self.close(False)
 
     def start_game(self) -> None:
-        pass
+        first_player = self.first_dropdown.value
+        second_player = self.second_dropdown.value
+        match self.random:
+            case 0:
+                level = 'Random'
+            case 1:
+                level = 'Random_standard'
+            case 2:
+                level = 'Random_editor'
+            case 3:
+                level = ''  # TODO
+        game = Game(first_player, second_player, self.same, level)
+        game.run()
 
     def change_same(self) -> None:
         self.same = not self.same

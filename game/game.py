@@ -9,10 +9,12 @@ from sprites.player import Player
 from game_types import Direction
 from sprites.bullet import Bullet
 from main import game_settings
+from sprites.weapons import weapons_dict, weapons_list
+from random import choice
 
 
 class Game(ar.Window):
-    def __init__(self) -> None:
+    def __init__(self, first_player_weapon: str) -> None:
         super().__init__(1, 1, 'Game', fullscreen=True)
         self.stop = False
         self.text = ''
@@ -35,7 +37,8 @@ class Game(ar.Window):
         self.enemies = ar.SpriteList()
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                             data.FILES['player_laying'], self.k / 6, 1, 10)
+                             data.FILES['player_laying'], self.k / 6, 1, 10,
+                             weapons_dict[first_player_weapon]())
         self.player_sprite = self.player.get_sprite()
         self.player_list = ar.SpriteList()
         self.player_list.append(self.player_sprite)
@@ -47,7 +50,7 @@ class Game(ar.Window):
 
         self.data_timer = data.get_data_timer()
 
-    def restart(self) -> None:
+    def restart(self, first_player_weapon: str = 'Glock-18') -> None:
         self.stop = False
         self.text = ''
         self.events = list()
@@ -67,7 +70,8 @@ class Game(ar.Window):
         self.bullets = ar.SpriteList()
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                             data.FILES['player_laying'], self.k / 6, 1, 10)
+                             data.FILES['player_laying'], self.k / 6, 1, 10,
+                             weapons_dict[first_player_weapon]())
         self.player_sprite = self.player.get_sprite()
         self.player_list = ar.SpriteList()
         self.player_list.append(self.player_sprite)
@@ -234,20 +238,46 @@ class Game(ar.Window):
 
 
 class PvP(Game):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, first_player_weapon: str, second_player_weapon: str, same_weapons: bool, level: str) -> None:
+        self.first_player_weapon_mode = first_player_weapon
+        if first_player_weapon == 'Random':
+            self.first_player_weapon = choice(weapons_list)
+        else:
+            self.first_player_weapon = first_player_weapon
+        if same_weapons:
+            self.second_player_weapon = self.first_player_weapon
+            self.second_player_weapon_mode = 'Same'
+        elif second_player_weapon == 'Random':
+            self.second_player_weapon_mode = second_player_weapon
+            self.second_player_weapon = choice(weapons_list)
+        else:
+            self.second_player_weapon_mode = second_player_weapon
+            self.second_player_weapon = second_player_weapon
+        super().__init__(self.first_player_weapon)
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                                    data.FILES['player_laying'], self.k / 6, 1, 12, is_second=True)
+                                    data.FILES['player_laying'], self.k / 6, 1, 12,
+                                    weapons_dict[self.second_player_weapon](), is_second=True)
         self.second_player_sprite = self.second_player.get_sprite()
         self.second_player_list = ar.SpriteList()
         self.second_player_list.append(self.second_player_sprite)
         self.second_player_physics = ar.PhysicsEnginePlatformer(self.second_player_sprite, self.wall_list,
                                                                 gravity_constant=consts.GRAVITY * self.k)
 
-    def restart(self) -> None:
-        super().restart()
+    def restart(self, **kwargs) -> None:
+        if self.first_player_weapon_mode == 'Random':
+            self.first_player_weapon = choice(weapons_list)
+        else:
+            self.first_player_weapon = self.first_player_weapon_mode
+        if self.second_player_weapon_mode == 'Same':
+            self.second_player_weapon = self.first_player_weapon
+        elif self.second_player_weapon_mode == 'Random':
+            self.second_player_weapon = choice(weapons_list)
+        else:
+            self.second_player_weapon = self.second_player_weapon_mode
+        super().restart(self.first_player_weapon)
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                                    data.FILES['player_laying'], self.k / 6, 1, 12, is_second=True)
+                                    data.FILES['player_laying'], self.k / 6, 1, 12,
+                                    weapons_dict[self.second_player_weapon](), is_second=True)
         self.second_player_sprite = self.second_player.get_sprite()
         self.second_player_list = ar.SpriteList()
         self.second_player_list.append(self.second_player_sprite)

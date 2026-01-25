@@ -9,8 +9,6 @@ class WeaponStatus(Enum):
     normal = 0
     reloading = 1
     shooting = 2
-    no_ammo = 3
-    preparing = 4
 
 
 class BulletCharacteristics:
@@ -36,15 +34,12 @@ class BulletCharacteristics:
 
 
 class Weapon:
-    def __init__(self, count_of_ammo: int, count_of_magazines: int,
-                 damage: int, normal_range: float, armor_piercing: int,
+    def __init__(self, count_of_ammo: int, damage: int, normal_range: float, armor_piercing: int,
                  spread_angle: int, rate_of_fire: float, reloading_time: float,
-                 bullet_speed: float, preparing_time: float) -> None:
-        self.preparing_time = preparing_time
+                 bullet_speed: float) -> None:
         self.count_of_ammo = count_of_ammo
-        self.magazines_ammo = count_of_magazines * count_of_ammo
         self.now_ammo = count_of_ammo
-        self.status = WeaponStatus.preparing
+        self.status = WeaponStatus.normal
         self.spread_angle = spread_angle
         self.timer = 0
         self.rate_of_fire = rate_of_fire
@@ -52,8 +47,7 @@ class Weapon:
         self.bullet_characteristics = BulletCharacteristics(damage, normal_range, armor_piercing, bullet_speed)
 
     def can_shoot(self) -> bool:
-        if (self.status == WeaponStatus.reloading or self.status == WeaponStatus.shooting
-                or self.status == WeaponStatus.preparing):
+        if self.status == WeaponStatus.reloading or self.status == WeaponStatus.shooting:
             return False
         if not self.now_ammo:
             self.start_reload()
@@ -67,8 +61,6 @@ class Weapon:
                     raise WeaponCanNotShootError('Weapon is already shot, wait')
                 case WeaponStatus.reloading:
                     raise WeaponCanNotShootError('Weapon can not shoot when reloading')
-                case WeaponStatus.preparing:
-                    raise WeaponCanNotShootError('Weapon can not shot when preparing')
         match direction:
             case Direction.up:
                 raise WrongWeaponDirectionError('Weapon can not shoot up')
@@ -84,9 +76,6 @@ class Weapon:
                 return [(self.bullet_characteristics, 0 + randint(-self.spread_angle, self.spread_angle) % 360)]
 
     def start_reload(self) -> None:
-        if not self.magazines_ammo:
-            self.status = WeaponStatus.no_ammo
-            return
         if self.status != WeaponStatus.normal or self.now_ammo == self.count_of_ammo:
             return
         self.status = WeaponStatus.reloading
@@ -95,11 +84,7 @@ class Weapon:
     def end_reload(self) -> None:
         self.status = WeaponStatus.normal
         self.timer = 0
-        self.magazines_ammo -= self.count_of_ammo - self.now_ammo
         self.now_ammo = self.count_of_ammo
-        while self.magazines_ammo < 0:
-            self.magazines_ammo += 1
-            self.now_ammo -= 1
 
     def on_update(self, delta_time: float) -> None:
         match self.status:
@@ -114,11 +99,6 @@ class Weapon:
                     self.timer = 0
                     self.status = WeaponStatus.normal
                     self.end_reload()
-            case WeaponStatus.preparing:
-                self.timer += delta_time
-                if self.timer >= self.preparing_time:
-                    self.timer = 0
-                    self.status = WeaponStatus.normal
 
     def get_status(self) -> WeaponStatus:
         return self.status
@@ -126,8 +106,8 @@ class Weapon:
 
 class StartWeapon(Weapon):
     def __init__(self) -> None:
-        super().__init__(50, 100000, 10, CELL_SIDE * 3, 15,
-                         4, 2.5 / 60, 2.5, 1500, 0)
+        super().__init__(50, 10, CELL_SIDE * 3, 15,
+                         4, 2.5 / 60, 2.5, 1500)
 
-# can be added more weapon
 weapons_list = ['Glock-18', 'UMP-45']
+weapons_dict = {'Glock-18': StartWeapon, 'UMP-45': StartWeapon}
