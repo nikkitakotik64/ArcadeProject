@@ -132,6 +132,10 @@ class RoomEditor(ar.View):
         save_button.on_click = self.on_save_click
         right_panel.add(save_button)
 
+        back_button = ar.gui.UIFlatButton(text="В меню уровней", width=250, height=50)
+        back_button.on_click = self.on_back_click
+        right_panel.add(back_button)
+
         container = ar.gui.UIAnchorLayout()
         container.add(
             child=right_panel,
@@ -436,10 +440,13 @@ class RoomEditor(ar.View):
         self.remove_existing_object(row, col, self.decor_sprites)
         self.remove_existing_object(row, col, self.functional_sprites)
 
+    def on_back_click(self, event):
+        self.window.close()
+        from editor.main_editor import main as editor_main
+        editor_main()
 
 def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=False)
-
     editor = RoomEditor()
     window.show_view(editor)
     ar.run()

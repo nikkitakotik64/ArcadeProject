@@ -1,4 +1,6 @@
 import arcade.gui
+
+from editor.room_editor import RoomEditor
 from editor.scroll_Area import *
 from editor.work_with_levels import *
 from editor.sub_Windows import AddLevelDialog
@@ -36,11 +38,13 @@ class LevelMenu(ar.View):
             # делаем кнопку уровня
             edit_btn = ar.gui.UIFlatButton(text=name, width=400)
             edit_btn.level_index = i
+            edit_btn.level_name = name
             edit_btn.on_click = self.on_edit_click
             grid.add(edit_btn, column=0, row=i)
             # делаем кнопку удаления рядом
             del_btn = ar.gui.UIFlatButton(text="del", width=50)
             del_btn.level_index = i
+            del_btn.level_name = name
             del_btn.on_click = self.on_delete_click
             grid.add(del_btn, column=1, row=i)
         self.scroll_area.add(grid)
@@ -75,10 +79,29 @@ class LevelMenu(ar.View):
         self.manager.draw()
 
     def on_edit_click(self, event):
-        pass
+        button = event.source
+        level_name = button.text
+        level_file_name = f"{level_name}.level"
+        self.window.close(False)
+        editor_window = ar.Window(
+            width=1400,  # Ширина окна редактора комнаты
+            height=600,  # Высота окна редактора комнаты
+            title="Редактор комнаты",
+            resizable=False
+        )
+        room_editor = RoomEditor(level_file_name)
+        editor_window.show_view(room_editor)
+        ar.run()
 
     def on_delete_click(self, event):
-        pass
+        button = event.source
+        level_name = button.level_name
+        if delete_level(level_name):
+            print("YES")
+            self.on_update_click(event)
+
+        else:
+            print("NO")
 
     def on_update_click(self, event):
         self.manager.clear()
