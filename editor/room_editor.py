@@ -25,25 +25,6 @@ TEXTURE_MAP = {
 }
 
 
-class GameObject(ar.Sprite):
-    """Класс для игровых объектов в редакторе"""
-
-    def __init__(self, row, col, texture_id, cell_size=20):
-        self.texture_id = texture_id
-        self.row = row
-        self.col = col
-        self.cell_size = cell_size
-        # self.alpha = 0.0
-        super().__init__(scale=1.0)
-
-    def update_position(self, grid_start_x, grid_start_y):
-        """Обновляет позицию спрайта на основе координат сетки"""
-        self.center_x = grid_start_x + self.col * self.cell_size + self.cell_size // 2
-        self.center_y = grid_start_y + self.row * self.cell_size + self.cell_size // 2
-        scale = self.cell_size / max(self.width, self.height) * 0.8
-        self.scale = scale
-
-
 class RoomEditor(ar.View):
     def __init__(self, level_name="Test_Level.level"):
         super().__init__()
@@ -58,15 +39,13 @@ class RoomEditor(ar.View):
 
         self.manager = arcade.gui.UIManager()
 
-        self.walls_sprites = ar.SpriteList()
-        self.decor_sprites = ar.SpriteList()
-        self.functional_sprites = ar.SpriteList()
+        self.walls_sprites = ar.SpriteList(use_spatial_hash=False)
+        self.decor_sprites = ar.SpriteList(use_spatial_hash=False)
+        self.functional_sprites = ar.SpriteList(use_spatial_hash=False)
 
         self.walls_data = []
         self.decor_data = []
         self.functional_data = []
-
-        self.background = 1
 
         self.textures = {}
         self.load_textures()
@@ -86,7 +65,7 @@ class RoomEditor(ar.View):
         self.decor_data = decor_data
         self.functional_data = functional_data
 
-        # Создаем спрайты для загруженных данных
+        # Спрайты для данных
         for wall in walls_data:
             self.create_sprite_from_data(wall, "walls")
         for decor in decor_data:
@@ -101,21 +80,29 @@ class RoomEditor(ar.View):
         texture_id = obj_data.get("texture_id", "")
 
         texture = self.textures.get(texture_id)
-        if texture:
-            sprite = GameObject(row, col, texture_id, self.cell_size)
-            sprite.texture = texture
+        if not texture:
+            return
 
-            # Сохраняем исходные данные в спрайте
-            sprite.obj_type = obj_type
-            sprite.texture_id = texture_id
+        # Создает спрайт с прозрачными областями
+        scale = self.cell_size / max(texture.width, texture.height) * 0.8
+        sprite = ar.Sprite(
+            scale=scale,
+            hit_box_algorithm="Detailed"  # Это убирает белые поля вокруг спрайта
+        )
+        sprite.texture = texture  # Устанавливает текстуру отдельно
 
-            # Добавляем в соответствующий список
-            if obj_type == "walls":
-                self.walls_sprites.append(sprite)
-            elif obj_type == "decor":
-                self.decor_sprites.append(sprite)
-            elif obj_type == "functional_objects":
-                self.functional_sprites.append(sprite)
+        sprite.row = row
+        sprite.col = col
+        sprite.texture_id = texture_id
+        sprite.obj_type = obj_type
+
+        # Добавляет в соответствующий список
+        if obj_type == "walls":
+            self.walls_sprites.append(sprite)
+        elif obj_type == "decor":
+            self.decor_sprites.append(sprite)
+        elif obj_type == "functional_objects":
+            self.functional_sprites.append(sprite)
 
     def on_show_view(self):
         ar.set_background_color(arcade.color.DARK_SLATE_GRAY)
@@ -261,35 +248,45 @@ class RoomEditor(ar.View):
             )
 
     def draw_objects(self):
-        # Обновляем позиции всех спрайтов перед отрисовкой
+        # Обновляет позиции всех спрайтов
         for sprite in self.walls_sprites:
-            sprite.update_position(self.grid_start_x, self.grid_start_y)
+            self.update_sprite_position(sprite)
         for sprite in self.decor_sprites:
-            sprite.update_position(self.grid_start_x, self.grid_start_y)
+            self.update_sprite_position(sprite)
         for sprite in self.functional_sprites:
-            sprite.update_position(self.grid_start_x, self.grid_start_y)
+            self.update_sprite_position(sprite)
 
-        # Рисуем спрайты
         self.walls_sprites.draw()
         self.decor_sprites.draw()
         self.functional_sprites.draw()
 
-        # Рисуем рамки
+        # Рисует рамки
         self.draw_borders()
+
+    def update_sprite_position(self, sprite):
+        """Обновляет позицию спрайта"""
+        sprite.center_x = self.grid_start_x + sprite.col * self.cell_size + self.cell_size // 2
+        sprite.center_y = self.grid_start_y + sprite.row * self.cell_size + self.cell_size // 2
 
     def draw_borders(self):
         """Рисует рамки вокруг объектов"""
         for sprite in self.walls_sprites:
-            self.draw_sprite_border(sprite, ar.color.RED)
+            if sprite.texture:
+                self.draw_sprite_border(sprite, ar.color.RED)
         for sprite in self.decor_sprites:
-            self.draw_sprite_border(sprite, ar.color.GREEN)
+            if sprite.texture:
+                self.draw_sprite_border(sprite, ar.color.GREEN)
         for sprite in self.functional_sprites:
-            self.draw_sprite_border(sprite, ar.color.BLUE)
+            if sprite.texture:
+                self.draw_sprite_border(sprite, ar.color.BLUE)
 
     def draw_sprite_border(self, sprite, color):
         """Рисует рамку вокруг спрайта"""
-        half_width = self.cell_size * 0.9 / 2
-        half_height = self.cell_size * 0.9 / 2
+        if sprite.texture is None:
+            return
+
+        half_width = sprite.width / 2
+        half_height = sprite.height / 2
 
         left = sprite.center_x - half_width
         right = sprite.center_x + half_width
@@ -317,24 +314,7 @@ class RoomEditor(ar.View):
 
     def on_save_click(self, event):
         """Сохранение уровня в файл"""
-        try:
-            # Обновляем данные из спрайтов
-            self.update_data_from_sprites()
-
-            level_data = {
-                "walls": self.walls_data,
-                "decor": self.decor_data,
-                "functional_objects": self.functional_data
-            }
-
-            path = levels_folder + '/' + self.level_name
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(level_data, f, ensure_ascii=False, indent=2)
-
-            print(f"Уровень {self.level_name} успешно сохранен!")
-
-        except Exception as e:
-            print(f"Ошибка при сохранении уровня: {e}")
+        pass
 
     def update_data_from_sprites(self):
         """Обновляет данные из спрайтов перед сохранением"""
@@ -397,42 +377,49 @@ class RoomEditor(ar.View):
         if not self.selected_tool or not self.selected_texture_id:
             return
 
-        # Проверяем столкновения
         if self.selected_tool == "walls":
-            # Проверяем функциональные объекты
+            # Проверяет функциональные объекты
             for sprite in self.functional_sprites:
                 if sprite.row == row and sprite.col == col:
                     return
-            # Удаляем существующую стену в этой клетке
+            # Удаляет существующую стену в этой клетке
             self.remove_existing_object(row, col, self.walls_sprites)
 
         elif self.selected_tool == "functional_objects":
-            # Проверяем стены
+            # Проверяет стены
             for sprite in self.walls_sprites:
                 if sprite.row == row and sprite.col == col:
                     return
-            # Удаляем существующий функциональный объект
+            # Удаляет существующий функциональный объект
             self.remove_existing_object(row, col, self.functional_sprites)
 
         elif self.selected_tool == "decor":
-            # Декор можно размещать где угодно, просто удаляем существующий
+            # Декор можно размещать где угодно, просто удаляет существующий
             self.remove_existing_object(row, col, self.decor_sprites)
 
-        # Создаем новый спрайт
+        # Создает новый спрайт
         texture = self.textures.get(self.selected_texture_id)
-        if texture:
-            sprite = GameObject(row, col, self.selected_texture_id, self.cell_size)
-            sprite.texture = texture
-            sprite.texture_id = self.selected_texture_id
-            sprite.obj_type = self.selected_tool
+        if not texture:
+            return
 
-            # Добавляем в соответствующий список
-            if self.selected_tool == "walls":
-                self.walls_sprites.append(sprite)
-            elif self.selected_tool == "decor":
-                self.decor_sprites.append(sprite)
-            elif self.selected_tool == "functional_objects":
-                self.functional_sprites.append(sprite)
+        scale = self.cell_size / max(texture.width, texture.height) * 0.8
+        sprite = ar.Sprite(
+            scale=scale,
+            hit_box_algorithm="Detailed"  # Это убирает белые поля
+        )
+        sprite.texture = texture
+
+        sprite.row = row
+        sprite.col = col
+        sprite.texture_id = self.selected_texture_id
+        sprite.obj_type = self.selected_tool
+
+        if self.selected_tool == "walls":
+            self.walls_sprites.append(sprite)
+        elif self.selected_tool == "decor":
+            self.decor_sprites.append(sprite)
+        elif self.selected_tool == "functional_objects":
+            self.functional_sprites.append(sprite)
 
     def remove_existing_object(self, row, col, sprite_list):
         """Удаляет существующий объект из списка спрайтов"""
@@ -444,7 +431,6 @@ class RoomEditor(ar.View):
 
     def remove_object(self, row, col):
         """Удаление объекта из указанной клетки"""
-        # Удаляем из всех списков
         self.remove_existing_object(row, col, self.walls_sprites)
         self.remove_existing_object(row, col, self.decor_sprites)
         self.remove_existing_object(row, col, self.functional_sprites)
