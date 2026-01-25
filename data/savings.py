@@ -26,7 +26,9 @@ class Data:
         'same_button_disabled': image_folder + '/same_button_disabled.png',
         'same_button_enabled': image_folder + '/same_button_enabled.png',
         'random_button_disabled': image_folder + '/random_button_disabled.png',
-        'random_button_enabled': image_folder + '/random_button_enabled.png',
+        'random_button_all': image_folder + '/random_button_all.png',
+        'random_button_editor': image_folder + '/random_button_editor.png',
+        'random_button_standard': image_folder + '/random_button_standard.png',
         'player_button': image_folder + '/player_button.png',
     }
 
