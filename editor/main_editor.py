@@ -14,7 +14,7 @@ class LevelMenu(ar.View):
     def __init__(self):
         super().__init__()
         self.manager = ar.gui.UIManager()
-        self.level_list = List_of_Levels.get_levels()
+        self.level_list = get_levels()
         self.create_grid()
         self.dialog_open = False
 
@@ -82,7 +82,7 @@ class LevelMenu(ar.View):
 
     def on_update_click(self, event):
         self.manager.clear()
-        self.level_list = List_of_Levels.get_levels()
+        self.level_list = get_levels()
         self.rework_grid()
 
     def on_add_click(self, event):
@@ -100,7 +100,7 @@ class LevelMenu(ar.View):
 
     def _on_dialog_ok(self, level_name):
 
-        List_of_Levels.add_level(level_name)
+        add_level(level_name)
 
         self.dialog_open = False
 
