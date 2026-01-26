@@ -1,3 +1,4 @@
+import arcade as ar
 import arcade.gui
 
 from editor.room_editor import RoomEditor
@@ -98,15 +99,13 @@ class LevelMenu(ar.View):
         button = event.source
         level_name = button.level_name
         if delete_level(level_name, self.manager):
-            self.on_update_click(event)
-
-        else:
-            print("NO")
+            # Откладывает обновление, чтобы избежать проблем
+            ar.schedule_once(lambda dt: self.rebuild_scroll_area(), 0.1)
 
     def on_update_click(self, event):
-        self.manager.clear()
+        # Обновляет список и пересоздает сетку
         self.level_list = get_levels()
-        self.rework_grid()
+        self.rebuild_scroll_area()
 
     def on_add_click(self, event):
         if self.dialog_open:
@@ -123,17 +122,43 @@ class LevelMenu(ar.View):
 
     def _on_dialog_ok(self, level_name):
         if add_level(level_name, self.manager):
-            self.on_update_click(None)
+            # Откладывает обновление
+            ar.schedule_once(lambda dt: self.rebuild_scroll_area(), 0.1)
         self.dialog_open = False
 
     def _on_dialog_cancel(self):
         """Колбэк при нажатии Cancel в диалоге"""
         self.dialog_open = False
 
-    def rework_grid(self):
-        for child in list(self.scroll_area.children):
-            self.scroll_area.remove(child)
-        self.create_grid()
+    def rebuild_scroll_area(self):
+        """Пересоздает содержимое scroll area"""
+        # Обновляет список уровней
+        self.level_list = get_levels()
+
+        grid = ar.gui.UIGridLayout(
+            column_count=2,
+            row_count=len(self.level_list),
+            horizontal_spacing=150,
+            vertical_spacing=20
+        )
+
+        for i, name in enumerate(self.level_list):
+            edit_btn = ar.gui.UIFlatButton(text=name, width=400)
+            edit_btn.level_index = i
+            edit_btn.level_name = name
+            edit_btn.on_click = self.on_edit_click
+            grid.add(edit_btn, column=0, row=i)
+
+            del_btn = ar.gui.UIFlatButton(text="del", width=50)
+            del_btn.level_index = i
+            del_btn.level_name = name
+            del_btn.on_click = self.on_delete_click
+            grid.add(del_btn, column=1, row=i)
+
+        # Очищает старую сетку и добавляем новую
+        # Заменяет содержимое
+        self.scroll_area.clear()
+        self.scroll_area.add(grid)
 
     def on_back_click(self, event):
         if self.window:

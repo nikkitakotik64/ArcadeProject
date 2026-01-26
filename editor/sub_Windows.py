@@ -82,7 +82,6 @@ class AddLevelDialog(ar.gui.UIMouseFilterMixin, ar.gui.UIAnchorLayout):
         )
 
     def _on_ok_click(self, event):
-
         level_name = self.level_input.text.strip()
 
         if not level_name:
@@ -91,16 +90,25 @@ class AddLevelDialog(ar.gui.UIMouseFilterMixin, ar.gui.UIAnchorLayout):
         if self.on_ok_callback:
             self.on_ok_callback(level_name)
 
-        # Закрываем окно
-        self.parent.remove(self)
+        self.close_dialog()
 
     def _on_cancel_click(self, event):
-        """Обработчик нажатия Cancel"""
         if self.on_cancel_callback:
             self.on_cancel_callback()
 
-        # Закрываем окно
-        self.parent.remove(self)
+        self.close_dialog()
+
+    def close_dialog(self):
+
+        # Использует scheduled call для избежания проблем с гонкой событий
+        def remove():
+            if hasattr(self, 'parent') and self.parent:
+                try:
+                    self.parent.remove(self)
+                except:
+                    pass  # Игнорирует ошибки удаления
+
+        ar.schedule_once(lambda dt: remove(), 0.05)
 
 
 class NotificationDialog(ar.gui.UIMouseFilterMixin, ar.gui.UIAnchorLayout):
@@ -177,8 +185,19 @@ class NotificationDialog(ar.gui.UIMouseFilterMixin, ar.gui.UIAnchorLayout):
         if self.on_ok_callback:
             self.on_ok_callback()
 
-        # Закрываем окно
-        self.parent.remove(self)
+        # Безопасное закрытие окна
+        self.close_dialog()
+
+    def close_dialog(self):
+
+        def remove():
+            if hasattr(self, 'parent') and self.parent:
+                try:
+                    self.parent.remove(self)
+                except:
+                    pass  # Игнорирует ошибки удаления
+
+        ar.schedule_once(lambda dt: remove(), 0.05)
 
 
 class ManagerContainer:
