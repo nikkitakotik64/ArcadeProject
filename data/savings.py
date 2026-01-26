@@ -37,6 +37,13 @@ class Data:
         'random_button_standard': image_folder + '/random_button_standard.png',
         'player_button': image_folder + '/player_button.png',
         'shotgun_bullet': image_folder + '/shotgun_bullet.png',
+        'label': image_folder + '/label.png',
+        'continue_button': image_folder + '/continue_button.png',
+        'back_button': image_folder + '/back_button.png',
+        'sound_button_game_enabled': image_folder + '/sound_button_game_enabled.png',
+        'sound_button_game_disabled': image_folder + '/sound_button_game_disabled.png',
+        'change_weapon_button': image_folder + '/change_weapon_button.png',
+        'restart_button': image_folder + '/restart_button.png',
     }
 
     LEVELS = {

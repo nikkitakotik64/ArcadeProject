@@ -3,7 +3,7 @@ import arcade as ar
 from screen import CELL_SIDE, W, H
 from data.savings import data
 from editor.main_editor import main as editor_start
-from menus.start_game_menu import StartGameMenu
+from menus.start_game_menu import StartGameMenu, restart
 
 
 class MainMenu(ar.Window):
@@ -53,8 +53,13 @@ class MainMenu(ar.Window):
 
     def start_game(self) -> None:
         self.close(False)
+        restart.set_false()
         start = StartGameMenu()
         start.run()
+        while restart.is_running():
+            restart.set_false()
+            start = StartGameMenu()
+            start.run()
 
     def start_editor(self) -> None:
         self.close(False)

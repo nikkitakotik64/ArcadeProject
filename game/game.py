@@ -11,15 +11,25 @@ from sprites.bullet import Bullet, ShotgunBullet
 from main import game_settings
 from sprites.weapons import weapons_dict, weapons_list, Shotgun
 from random import choice
+from enum import Enum
+
+
+class GameStatus(Enum):
+    normal = 1
+    paused = 2
+    ended = 3
 
 
 class Game(ar.Window):
     def __init__(self, first_player_weapon: str) -> None:
         super().__init__(1, 1, 'Game', fullscreen=True)
-        self.stop = False
-        self.text = ''
+        self.status = GameStatus.normal
         self.k = CELL_SIDE / 16
         self.events = list()
+        label = ar.Sprite(data.FILES['label'], self.k)
+        label.center_x, label.center_y = self.width / 2, self.height / 2
+        self.label = ar.SpriteList()
+        self.label.append(label)
 
         self.world_walls = set()
         self.world_walls.add(WorldWall(data.FILES['hor_world_wall'], self.width / 800, self.width / 2, -2))
@@ -51,8 +61,7 @@ class Game(ar.Window):
         self.data_timer = data.get_data_timer()
 
     def restart(self, first_player_weapon: str = 'Glock-18') -> None:
-        self.stop = False
-        self.text = ''
+        self.status = GameStatus.normal
         self.events = list()
 
         self.world_walls = set()
@@ -165,11 +174,10 @@ class Game(ar.Window):
                     try:
                         self.enemies.remove(sprite)
                     except ValueError:
-                        self.text = 'You are dead'
-                        self.stop = True
+                        self.status = GameStatus.ended
 
     def on_update(self, delta_time: float) -> None:
-        if self.stop:
+        if self.status != GameStatus.normal:
             return
         self.events_update()
         self.player.on_update(delta_time)
@@ -187,9 +195,16 @@ class Game(ar.Window):
         else:
             self.data_timer -= delta_time
 
+    def pause(self) -> None:
+        self.status = GameStatus.paused
+
     def on_key_press(self, key: int, modifiers: int) -> None:
+        if self.status != GameStatus.normal:
+            if self.status == GameStatus.ended and key == ar.key.R:
+                self.restart()
+            return
         if key == ar.key.ESCAPE:
-            self.close(False)
+            self.pause()
         if key == ar.key.W:
             if self.player.get_status() != PlayerStatus.siting and self.player.get_status() != PlayerStatus.laying:
                 self.events.append(EventsID.up)
@@ -204,10 +219,7 @@ class Game(ar.Window):
         if key == ar.key.SPACE:
             self.events.append(EventsID.shoot)
         if key == ar.key.R:
-            if self.stop:
-                self.restart()
-            else:
-                self.events.append(EventsID.reload)
+            self.events.append(EventsID.reload)
 
     def close(self, ended: bool = True) -> None:
         if ended:
@@ -243,6 +255,9 @@ class Game(ar.Window):
 
 
 class PvP(Game):
+    sound_button_enabled = ar.Sprite(data.FILES['sound_button_game_enabled'], CELL_SIDE / 40)
+    sound_button_disabled = ar.Sprite(data.FILES['sound_button_game_disabled'], CELL_SIDE / 40)
+
     def __init__(self, first_player_weapon: str, second_player_weapon: str, same_weapons: bool, level: str,
                  restart) -> None:
         self.first_player_weapon_mode = first_player_weapon
@@ -260,7 +275,13 @@ class PvP(Game):
             self.second_player_weapon_mode = second_player_weapon
             self.second_player_weapon = second_player_weapon
         super().__init__(self.first_player_weapon)
-        self.restart = restart
+        if game_settings['sounds']:
+            self.sound_button = ar.Sprite(data.FILES['sound_button_game_enabled'], self.k / 2.5)
+        else:
+            self.sound_button = ar.Sprite(data.FILES['sound_button_game_disabled'], self.k / 2.5)
+        self.sound_button.center_x = W - CELL_SIDE * 2
+        self.sound_button.center_y = H - CELL_SIDE * 2
+        self.is_restart = restart
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                                     data.FILES['player_laying'], self.k / 6, 1, 12,
                                     weapons_dict[self.second_player_weapon](), is_second=True)
@@ -269,6 +290,25 @@ class PvP(Game):
         self.second_player_list.append(self.second_player_sprite)
         self.second_player_physics = ar.PhysicsEnginePlatformer(self.second_player_sprite, self.wall_list,
                                                                 gravity_constant=consts.GRAVITY * self.k)
+
+        self.pause_buttons = ar.SpriteList()
+        self.continue_button = ar.Sprite(data.FILES['continue_button'], self.k)
+        self.back_button = ar.Sprite(data.FILES['back_button'], self.k)
+        self.continue_button.center_x, self.continue_button.center_y = W_OUTLINE + 3 * WIDTH / 4, H_OUTLINE + HEIGHT / 8
+        self.back_button.center_x, self.back_button.center_y = W_OUTLINE + WIDTH / 4, H_OUTLINE + HEIGHT / 8
+        self.pause_buttons.append(self.continue_button)
+        self.pause_buttons.append(self.back_button)
+        self.pause_buttons.append(self.sound_button)
+
+        self.end_buttons = ar.SpriteList()
+        self.restart_button = ar.Sprite(data.FILES['restart_button'], self.k)
+        self.restart_button.center_x, self.restart_button.center_y = W_OUTLINE + 3 * WIDTH / 4, H_OUTLINE + HEIGHT / 8
+        self.end_buttons.append(self.restart_button)
+        self.end_buttons.append(self.back_button)
+        self.change_weapon_button = ar.Sprite(data.FILES['change_weapon_button'], self.k)
+        self.change_weapon_button.center_x, self.change_weapon_button.center_y = (W_OUTLINE + WIDTH / 2,
+                                                                                  H_OUTLINE + HEIGHT / 2)
+        self.end_buttons.append(self.change_weapon_button)
 
     def restart(self, **kwargs) -> None:
         if self.first_player_weapon_mode == 'Random':
@@ -349,7 +389,28 @@ class PvP(Game):
         self.bullets.draw()
         self.wall_list.draw()
         self.functional_objects.draw()
-        ar.draw_text(self.text, self.center_x - 12.5 * len(self.text), self.center_y, ar.color.RED, 50)
+        ar.draw_text('HP: ' + str(round(self.player.get_hp())), 16 * self.k, self.height - 16 * self.k, ar.color.RED,
+                     12 * self.k)
+        ar.draw_text('Weapon: ' + self.first_player_weapon, 16 * self.k, self.height - 40 * self.k, ar.color.RED,
+                     12 * self.k)
+        ar.draw_text('HP: ' + str(round(self.second_player.get_hp())), self.width - 160 * self.k,
+                     self.height - 16 * self.k, ar.color.RED, 12 * self.k)
+        ar.draw_text('Weapon: ' + self.second_player_weapon, self.width - 160 * self.k,
+                     self.height - 40 * self.k, ar.color.RED, 12 * self.k)
+        if self.status == GameStatus.paused:
+            self.label.draw()
+            ar.draw_text('PAUSE', self.center_x - 40 * self.k, self.height - 128 * self.k, ar.color.RED, 24 * self.k)
+            self.pause_buttons.draw()
+        elif self.status == GameStatus.ended:
+            self.label.draw()
+            if self.player.get_hp():
+                text = 'First Player Won!'
+            elif self.second_player.get_hp():
+                text = 'Second Player Won!'
+            else:
+                text = 'Draw'
+            ar.draw_text(text, self.center_x - 8 * self.k * len(text), self.center_y + HEIGHT / 3, ar.color.RED, 24 * self.k)
+            self.end_buttons.draw()
 
     def bullets_update(self, delta_time: float) -> None:
         for bullet in self.bullets:
@@ -369,17 +430,18 @@ class PvP(Game):
                 sprite.damage(bullet.get_damage())
                 self.bullets.remove(bullet)
                 if not sprite.get_hp():
-                    self.stop = True
-                    if sprite == self.player_sprite:
-                        self.text = 'Second Player Won!'
-                    else:
-                        self.text = 'First Player Won!'
+                    self.status = GameStatus.ended
 
-    def pause(self) -> None:
-        self.stop = True
+    def change_sound(self) -> None:
+        game_settings['sounds'] = not game_settings['sounds']
+        data.save_sound_settings(game_settings['sounds'])
+        if game_settings['sounds']:
+            self.sound_button.texture = self.sound_button_enabled.texture
+        else:
+            self.sound_button.texture = self.sound_button_disabled.texture
 
     def on_update(self, delta_time: float) -> None:
-        if self.stop:
+        if self.status != GameStatus.normal:
             return
         self.events_update()
         self.player.on_update(delta_time)
@@ -399,6 +461,8 @@ class PvP(Game):
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         super().on_key_press(key, modifiers)
+        if self.status != GameStatus.normal:
+            return
         if key == ar.key.UP:
             if (self.second_player.get_status() != PlayerStatus.siting
                     and self.second_player.get_status() != PlayerStatus.laying):
@@ -430,11 +494,35 @@ class PvP(Game):
         except ValueError:
             pass
 
-    def on_mouse_press(self, _: int, __: int, button: int, ___: int) -> None:
+    def on_mouse_press(self, x: int, y: int, button: int, _: int) -> None:
+        if self.status != GameStatus.normal:
+            if button == ar.MOUSE_BUTTON_LEFT:
+                self.click(x, y)
+            return
         if button == ar.MOUSE_BUTTON_LEFT:
             self.events.append(EventsID.sec_shoot)
         if button == ar.MOUSE_BUTTON_RIGHT:
             self.events.append(EventsID.sec_reload)
+
+    def click(self, x: float, y: float) -> None:
+        if (self.back_button.left <= x <= self.back_button.right
+                and self.back_button.bottom <= y <= self.back_button.top):
+            self.close(False)
+        if self.status == GameStatus.paused:
+            if (self.sound_button.left <= x <= self.sound_button.right
+                    and self.sound_button.bottom <= y <= self.sound_button.top):
+                self.change_sound()
+            elif (self.continue_button.left <= x <= self.continue_button.right
+                  and self.continue_button.bottom <= y <= self.continue_button.top):
+                self.status = GameStatus.normal
+        else:
+            if (self.restart_button.left <= x <= self.restart_button.right
+                    and self.restart_button.bottom <= y <= self.restart_button.top):
+                self.restart()
+            elif (self.change_weapon_button.left <= x <= self.change_weapon_button.right
+                  and self.change_weapon_button.bottom <= y <= self.change_weapon_button.top):
+                self.is_restart.set_true()
+                self.close(False)
 
     def on_mouse_release(self, _: int, __: int, button: int, ___: int) -> None:
         try:

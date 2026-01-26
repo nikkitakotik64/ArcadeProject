@@ -7,7 +7,7 @@ from sprites.weapons import weapons_list
 from game.game import PvP as Game
 from game_types import Running
 
-changing = [False, False]
+restart = Running()
 
 
 def create_tool_section(title: str, options: list[str], x: int, y: int, width: int, height: int):
@@ -78,7 +78,7 @@ class StartGameMenu(ar.Window):
         self.editor_levels = ['level hz']  # TODO
         ar.set_background_color(ar.color.DARK_RED)
         self.buttons = ar.SpriteList()
-        self.changing = changing
+        self.changing = [False, False]
 
         self.start_button = ar.Sprite(data.FILES['start_button'], self.k)
         self.start_button.center_x = WIDTH / 2 + W_OUTLINE
@@ -173,7 +173,6 @@ class StartGameMenu(ar.Window):
             case 3:
                 level = ''  # TODO
         self.stop = True
-        restart = Running()
         restart.set_false()
         game = Game(first_player, second_player, self.same, level, restart)
         game.run()
