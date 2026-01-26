@@ -33,10 +33,13 @@ class Player:
         self.status = PlayerStatus.normal
         self.sprite = PlayerSprite(texture_staying, scale)
         self.texture_staying = texture_staying
+        self.texture_staying_left = texture_staying[:-4] + '_left.png'
         self.texture_siting = texture_siting
+        self.texture_siting_left = texture_siting[:-4] + '_left.png'
         self.scale = scale
         self.app = app
         self.texture_laying = texture_laying
+        self.texture_laying_left = texture_laying[:-4] + '_left.png'
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
         self.direction = Direction.right
         self.weapon = weapon
@@ -52,19 +55,31 @@ class Player:
     def move(self, row: int, col: int) -> None:
         self.sprite.center_x, self.sprite.center_y = cell_center(row, col)
 
-    def update_texture(self, status: PlayerStatus) -> None:
+    def update_texture(self, status: PlayerStatus, direction: Direction) -> None:
+        change_x, change_y = self.sprite.change_x, self.sprite.change_y
         if status == PlayerStatus.siting:
-            center_x, bottom = self.sprite.center_x, self.sprite.bottom
-            self.sprite = PlayerSprite(self.texture_siting, self.scale)
-            self.sprite.center_x, self.sprite.bottom = center_x, bottom
+            if direction == Direction.right:
+                center_x, bottom = self.sprite.center_x, self.sprite.bottom
+                self.sprite = PlayerSprite(self.texture_siting, self.scale)
+                self.sprite.center_x, self.sprite.bottom = center_x, bottom
+            else:
+                center_x, bottom = self.sprite.center_x, self.sprite.bottom
+                self.sprite = PlayerSprite(self.texture_siting_left, self.scale)
+                self.sprite.center_x, self.sprite.bottom = center_x, bottom
         elif status == PlayerStatus.laying:
             center_x, bottom = self.sprite.center_x, self.sprite.bottom
             self.sprite = PlayerSprite(self.texture_laying, self.scale)
             self.sprite.center_x, self.sprite.bottom = center_x, bottom
         else:
-            center_x, bottom = self.sprite.center_x, self.sprite.bottom
-            self.sprite = PlayerSprite(self.texture_staying, self.scale)
-            self.sprite.center_x, self.sprite.bottom = center_x, bottom
+            if direction == Direction.right:
+                center_x, bottom = self.sprite.center_x, self.sprite.bottom
+                self.sprite = PlayerSprite(self.texture_staying, self.scale)
+                self.sprite.center_x, self.sprite.bottom = center_x, bottom
+            else:
+                center_x, bottom = self.sprite.center_x, self.sprite.bottom
+                self.sprite = PlayerSprite(self.texture_staying_left, self.scale)
+                self.sprite.center_x, self.sprite.bottom = center_x, bottom
+        self.sprite.change_x, self.sprite.change_y = change_x, change_y
         if self.is_second:
             self.app.update_second_player_sprite()
         else:
@@ -72,7 +87,7 @@ class Player:
 
     def set_status(self, status: PlayerStatus) -> None:
         if self.status == PlayerStatus.siting or self.status == PlayerStatus.laying:
-            self.update_texture(status)
+            self.update_texture(status, self.direction)
         self.status = status
 
     def get_status(self) -> PlayerStatus:
@@ -85,24 +100,25 @@ class Player:
         match self.status:
             case PlayerStatus.normal:
                 self.status = PlayerStatus.siting
-                self.update_texture(self.status)
+                self.update_texture(self.status, self.direction)
             case PlayerStatus.siting:
                 self.status = PlayerStatus.laying
-                self.update_texture(self.status)
+                self.update_texture(self.status, self.direction)
 
     def up(self) -> None:
         match self.status:
             case PlayerStatus.laying:
                 self.status = PlayerStatus.siting
-                self.update_texture(self.status)
+                self.update_texture(self.status, self.direction)
             case PlayerStatus.siting:
                 self.status = PlayerStatus.normal
-                self.update_texture(self.status)
+                self.update_texture(self.status, self.direction)
 
     def set_direction(self, direction: Direction) -> None:
         if direction != Direction.right and direction != Direction.left:
             raise WrongPlayerDirectionError('Player can have only right or left direction')
         self.direction = direction
+        self.update_texture(self.status, self.direction)
 
     def shoot(self) -> list:
         bullets = list()
@@ -114,7 +130,14 @@ class Player:
                         x = self.sprite.right
                     case Direction.left:
                         x = self.sprite.left
-                bullets.append([x, self.sprite.center_y, bullet_characteristics, angle])
+                match self.status:
+                    case PlayerStatus.siting:
+                        y = self.sprite.center_y
+                    case PlayerStatus.laying:
+                        y = self.sprite.center_y
+                    case _:
+                        y = self.sprite.center_y + self.sprite.height / 9
+                bullets.append([x, y, bullet_characteristics, angle])
         return bullets
 
     def on_update(self, delta_time: float) -> None:

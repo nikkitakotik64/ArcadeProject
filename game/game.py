@@ -11,7 +11,7 @@ from sprites.player import Player
 from game_types import Direction
 from sprites.bullet import Bullet, ShotgunBullet
 from main import game_settings
-from sprites.weapons import weapons_dict, weapons_list, Shotgun
+from sprites.weapons import weapons_dict, weapons_list, Shotgun, weapons_sounds
 from random import choice
 from enum import Enum
 
@@ -142,6 +142,8 @@ class Game(ar.Window):
         if EventsID.shoot in self.events:
             bullets = self.player.shoot()
             if bullets:
+                if game_settings['sounds']:
+                    ar.play_sound(weapons_sounds[self.first_player_weapon])
                 if isinstance(self.player.get_weapon(), Shotgun):
                     for x, y, bullet_characteristics, angle in bullets:
                         bullet = ShotgunBullet(x, y, bullet_characteristics, angle, self.k / 12, [self.player_sprite])
@@ -385,6 +387,8 @@ class PvP(Game):
         if EventsID.sec_shoot in self.events:
             bullets = self.second_player.shoot()
             if bullets:
+                if game_settings['sounds']:
+                    ar.play_sound(weapons_sounds[self.second_player_weapon])
                 if isinstance(self.second_player.get_weapon(), Shotgun):
                     for x, y, bullet_characteristics, angle in bullets:
                         bullet = ShotgunBullet(x, y, bullet_characteristics, angle, self.k / 12,

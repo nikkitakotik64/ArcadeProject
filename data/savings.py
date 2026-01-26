@@ -5,6 +5,7 @@ data_folder = os.path.dirname(__file__)
 image_folder = data_folder + '/images'
 levels_folder = data_folder + '/levels'
 file_folder = data_folder + '/files'
+sounds_folder = data_folder + '/sounds'
 
 
 class Data:
@@ -48,6 +49,31 @@ class Data:
 
     LEVELS = {
         'somt': 'C:/Users/Сергей/PycharmProjects\ArcadeProject\editor/editor_levels/Test_Level.level',
+    }
+
+    SOUNDS = {
+        'glock-18': sounds_folder + '/glock-18.mp3',
+        'p250': sounds_folder + '/p250.mp3',
+        'USP-S': sounds_folder + '/usp-s.mp3',
+        'Dual Berrettas': sounds_folder + '/dual_berrettas.mp3',
+        'Revolver R8': sounds_folder + '/revolver.mp3',
+        'Desert Eagle': sounds_folder + '/deagle.mp3',
+        'MP5': sounds_folder + '/mp5.mp3',
+        'MP7': sounds_folder + '/mp7.mp3',
+        'MP9': sounds_folder + '/mp9.mp3',
+        'UZI': sounds_folder + '/uzi.mp3',
+        'P90': sounds_folder + '/p90.mp3',
+        'M249': sounds_folder + '/m249.mp3',
+        'XM1014': sounds_folder + '/xm1014.mp3',
+        'MAG-7': sounds_folder + '/mag7.mp3',
+        'M4A4': sounds_folder + '/m4a4.mp3',
+        'SCAR20': sounds_folder + '/scar20.mp3',
+        'FAMAS': sounds_folder + '/famas.mp3',
+        'AUG': sounds_folder + '/aug.mp3',
+        'SSG-08': sounds_folder + '/ssg08.mp3',
+        'AWP': sounds_folder + '/awp.mp3',
+        'SVD': sounds_folder + '/svd.mp3',
+        'AK47': sounds_folder + '/ak47.mp3',
     }
 
     def __init__(self) -> None:

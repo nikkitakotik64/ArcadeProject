@@ -3,6 +3,8 @@ from random import randint
 from errors import WeaponCanNotShootError, WrongWeaponDirectionError
 from game_types import Direction
 from screen import CELL_SIDE
+import arcade as ar
+from data.savings import data
 
 
 class WeaponStatus(Enum):
@@ -260,3 +262,25 @@ weapons_dict = {'Glock-18': Glock18, 'P250': P250, 'USP-S': USP, 'Dual Berrettas
                 'UZI': UZI, 'MP5': MP5, 'P90': P90, 'M249': M249, 'XM1014': XM1014, 'MAG-7': MAG7,
                 'M4A4': M4A4, 'AK-47': AK47, 'SCAR-20': SCAR20, 'FAMAS': FAMAS, 'AUG': AUG,
                 'SSG-08': SSG08, 'AWP': AWP, 'SVD': SVD}
+weapons_sounds = {'Glock-18': ar.load_sound(data.SOUNDS['glock-18']),
+                  'P250': ar.load_sound(data.SOUNDS['p250']),
+                  'USP-S': ar.load_sound(data.SOUNDS['USP-S']),
+                  'Dual Berrettas': ar.load_sound(data.SOUNDS['Dual Berrettas']),
+                  'Revolver R8': ar.load_sound(data.SOUNDS['Revolver R8']),
+                  'Desert Eagle': ar.load_sound(data.SOUNDS['Desert Eagle']),
+                  'MP5': ar.load_sound(data.SOUNDS['MP5']),
+                  'MP7': ar.load_sound(data.SOUNDS['MP7']),
+                  'MP9': ar.load_sound(data.SOUNDS['MP9']),
+                  'UZI': ar.load_sound(data.SOUNDS['UZI']),
+                  'P90': ar.load_sound(data.SOUNDS['P90']),
+                  'M249': ar.load_sound(data.SOUNDS['M249']),
+                  'XM1014': ar.load_sound(data.SOUNDS['XM1014']),
+                  'MAG-7': ar.load_sound(data.SOUNDS['MAG-7']),
+                  'M4A4': ar.load_sound(data.SOUNDS['M4A4']),
+                  'AK-47': ar.load_sound(data.SOUNDS['AK47']),
+                  'SCAR-20': ar.load_sound(data.SOUNDS['SCAR20']),
+                  'FAMAS': ar.load_sound(data.SOUNDS['FAMAS']),
+                  'AUG': ar.load_sound(data.SOUNDS['AUG']),
+                  'SSG-08': ar.load_sound(data.SOUNDS['SSG-08']),
+                  'AWP': ar.load_sound(data.SOUNDS['AWP']),
+                  'SVD': ar.load_sound(data.SOUNDS['SVD'])}
