@@ -9,21 +9,28 @@ levels_folder = editor_folder + '/editor_levels'
 
 # Получает список названий уровней. Используется для создания списка кнопок в меню редактора. Может быть понадобится ещё для чего-то
 def get_levels():
-    with open(levels_folder + '/system_files' + '/Level_List', "r", encoding="utf-8") as f:
-        level_list = f.readline().strip().split(";")[:-1]
+    level_list = []
+    for filename in os.listdir(levels_folder):
+        if filename.endswith('.level'):
+            level_name = filename[:-6]
+            level_list.append(level_name)
     return level_list
-# Добавляет в список названий уровней название нового уровня. Создает пустой файл уровня для редактора комнаты(уровня)
+#  Создает пустой файл уровня для редактора комнаты(уровня)
 def add_level(level_name):
-    with open(levels_folder + '/system_files' + '/Level_List', "a", encoding="utf-8") as f:
-        f.write(f"{level_name};")
-
-    with open(f"{levels_folder}/{level_name}.level", "w", encoding="utf-8") as f:
+    path = os.path.join(levels_folder, f"{level_name}.level")
+    with open(path, "w", encoding="utf-8") as f:
         # line = '{"room": {"walls": [], "decor": [], "functional_objects": []}}'
         # f.write(line)
         pass
+def delete_level(level_name):
+    path = os.path.join(levels_folder, f"{level_name}.level")
+    if os.path.exists(path):
+        os.remove(path)
+        return True
+    return False
 
 def load_level(level_name):
-    path = levels_folder + '/' + level_name
+    path = os.path.join(levels_folder, level_name)
     if os.path.getsize(path) > 0:
         with open(path, "r", encoding="utf-8") as f:
             level_data = json.load(f)
@@ -44,6 +51,6 @@ def save_room(walls, decor, functional_objects, level_name):
         "decor": decor,
         "functional_objects": functional_objects
     }
-    path = levels_folder + "/" + level_name
+    path = os.path.join(levels_folder, level_name)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(level_data, f, ensure_ascii=False, indent=2)
