@@ -38,6 +38,7 @@ class RoomEditor(ar.View):
         self.selected_option_name = None
 
         self.manager = arcade.gui.UIManager()
+        ManagerContainer.set_manager(self.manager)
 
         self.walls_sprites = ar.SpriteList(use_spatial_hash=False)
         self.decor_sprites = ar.SpriteList(use_spatial_hash=False)
@@ -321,7 +322,7 @@ class RoomEditor(ar.View):
         """Сохранение уровня в файл"""
         self.update_data_from_sprites()
         # save_room(self.walls_data, self.decor_data, self.functional_data, self.level_name)
-        save_room(self.walls_data, self.decor_data, self.level_name)
+        save_room(self.walls_data, self.decor_data, self.level_name, self.manager)
 
     def update_data_from_sprites(self):
         """Обновляет данные из спрайтов перед сохранением"""
@@ -401,7 +402,6 @@ class RoomEditor(ar.View):
         #     self.remove_existing_object(row, col, self.functional_sprites)
 
         elif self.selected_tool == "decor":
-            # Декор можно размещать где угодно, просто удаляет существующий
             self.remove_existing_object(row, col, self.decor_sprites)
 
         # Создает новый спрайт

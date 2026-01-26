@@ -16,6 +16,7 @@ class LevelMenu(ar.View):
     def __init__(self):
         super().__init__()
         self.manager = ar.gui.UIManager()
+        ManagerContainer.set_manager(self.manager)
         self.level_list = get_levels()
         self.create_grid()
         self.dialog_open = False
@@ -23,7 +24,7 @@ class LevelMenu(ar.View):
     def create_grid(self):
         # главный Box для всего окна
         main_layout = ar.gui.UIBoxLayout(vertical=True, space_between=10)
-        # создаем кнопку обновления
+
         update_list_btn = ar.gui.UIFlatButton(text="Обновить", width=600)
         update_list_btn.on_click = self.on_update_click
         main_layout.add(update_list_btn)
@@ -50,11 +51,11 @@ class LevelMenu(ar.View):
         self.scroll_area.add(grid)
         main_layout.add(self.scroll_area)
         anchor_layout = self.manager.add(ar.gui.UIAnchorLayout())
-        # создаем кнопку добавления
+
         add_btn = ar.gui.UIFlatButton(text="Добавить", width=600)
         add_btn.on_click = self.on_add_click
         main_layout.add(add_btn)
-        # кнопка возврата в гл.меню
+
         back_to_menu_btn = ar.gui.UIFlatButton(text="В Главное меню", width=600)
         back_to_menu_btn.on_click = self.on_back_click
         main_layout.add(back_to_menu_btn)
@@ -96,8 +97,7 @@ class LevelMenu(ar.View):
     def on_delete_click(self, event):
         button = event.source
         level_name = button.level_name
-        if delete_level(level_name):
-            print("YES")
+        if delete_level(level_name, self.manager):
             self.on_update_click(event)
 
         else:
@@ -122,9 +122,8 @@ class LevelMenu(ar.View):
         self.manager.add(dialog, layer=1)
 
     def _on_dialog_ok(self, level_name):
-
-        add_level(level_name)
-
+        if add_level(level_name, self.manager):
+            self.on_update_click(None)
         self.dialog_open = False
 
     def _on_dialog_cancel(self):
