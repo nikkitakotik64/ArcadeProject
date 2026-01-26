@@ -11,7 +11,7 @@ SCREEN_TITLE = "Редактор комнаты"
 OBJECT_TYPES = {
     "walls": "Стены",
     "decor": "Декор",
-    "functional_objects": "Функциональные"
+    # "functional_objects": "Функциональные"
 }
 
 TEXTURE_MAP = {
@@ -21,7 +21,7 @@ TEXTURE_MAP = {
     "Дерево": "tree",
     "Ваза": "vase",
     "Сундук": "chest",
-    "Дверь": "door"
+    # "Дверь": "door"
 }
 
 
@@ -41,11 +41,12 @@ class RoomEditor(ar.View):
 
         self.walls_sprites = ar.SpriteList(use_spatial_hash=False)
         self.decor_sprites = ar.SpriteList(use_spatial_hash=False)
-        self.functional_sprites = ar.SpriteList(use_spatial_hash=False)
+        # self.functional_sprites = ar.SpriteList(use_spatial_hash=False)
 
         self.walls_data = []
         self.decor_data = []
-        self.functional_data = []
+        # self.functional_data = []
+        self.background = "back"
 
         self.textures = {}
         self.load_textures()
@@ -59,25 +60,25 @@ class RoomEditor(ar.View):
 
     def load_level_data(self, level_name):
         """Загружает данные уровня и создает спрайты"""
-        walls_data, decor_data, functional_data = load_level(level_name)
+        walls_data, decor_data = load_level(level_name)
 
         self.walls_data = walls_data
         self.decor_data = decor_data
-        self.functional_data = functional_data
+        # self.functional_data = functional_data
 
         # Спрайты для данных
         for wall in walls_data:
             self.create_sprite_from_data(wall, "walls")
         for decor in decor_data:
             self.create_sprite_from_data(decor, "decor")
-        for functional in functional_data:
-            self.create_sprite_from_data(functional, "functional_objects")
+        # for functional in functional_data:
+        #     self.create_sprite_from_data(functional, "functional_objects")
 
     def create_sprite_from_data(self, obj_data, obj_type):
         """Создает спрайт из данных объекта"""
         row = obj_data.get("row", 0)
         col = obj_data.get("col", 0)
-        texture_id = obj_data.get("texture_id", "")
+        texture_id = obj_data.get("texture", "")
 
         texture = self.textures.get(texture_id)
         if not texture:
@@ -101,8 +102,8 @@ class RoomEditor(ar.View):
             self.walls_sprites.append(sprite)
         elif obj_type == "decor":
             self.decor_sprites.append(sprite)
-        elif obj_type == "functional_objects":
-            self.functional_sprites.append(sprite)
+        # elif obj_type == "functional_objects":
+        #     self.functional_sprites.append(sprite)
 
     def on_show_view(self):
         ar.set_background_color(arcade.color.DARK_SLATE_GRAY)
@@ -119,10 +120,10 @@ class RoomEditor(ar.View):
 
         walls_section = self.create_tool_section("Стены", ["Кирпичная", "Металлическая"])
         right_panel.add(walls_section)
-        decor_section = self.create_tool_section("Декор", ["Факел", "Дерево", "Ваза"])
+        decor_section = self.create_tool_section("Декор", ["Факел", "Дерево", "Ваза", "Сундук"])
         right_panel.add(decor_section)
-        functional_section = self.create_tool_section("Функциональные", ["Сундук", "Дверь"])
-        right_panel.add(functional_section)
+        # functional_section = self.create_tool_section("Функциональные", ["Сундук", "Дверь"])
+        # right_panel.add(functional_section)
 
         save_button = ar.gui.UIFlatButton(
             text="Сохранить уровень",
@@ -191,8 +192,8 @@ class RoomEditor(ar.View):
             self.selected_tool = "walls"
         elif section_title == "Декор":
             self.selected_tool = "decor"
-        elif section_title == "Функциональные":
-            self.selected_tool = "functional_objects"
+        # elif section_title == "Функциональные":
+        #     self.selected_tool = "functional_objects"
 
         self.selected_texture_id = TEXTURE_MAP[selected_option]
         self.selected_option_name = selected_option
@@ -257,12 +258,12 @@ class RoomEditor(ar.View):
             self.update_sprite_position(sprite)
         for sprite in self.decor_sprites:
             self.update_sprite_position(sprite)
-        for sprite in self.functional_sprites:
-            self.update_sprite_position(sprite)
+        # for sprite in self.functional_sprites:
+        #     self.update_sprite_position(sprite)
 
         self.walls_sprites.draw()
         self.decor_sprites.draw()
-        self.functional_sprites.draw()
+        # self.functional_sprites.draw()
 
         # Рисует рамки
         self.draw_borders()
@@ -280,9 +281,9 @@ class RoomEditor(ar.View):
         for sprite in self.decor_sprites:
             if sprite.texture:
                 self.draw_sprite_border(sprite, ar.color.GREEN)
-        for sprite in self.functional_sprites:
-            if sprite.texture:
-                self.draw_sprite_border(sprite, ar.color.BLUE)
+        # for sprite in self.functional_sprites:
+        #     if sprite.texture:
+        #         self.draw_sprite_border(sprite, ar.color.BLUE)
 
     def draw_sprite_border(self, sprite, color):
         """Рисует рамку вокруг спрайта"""
@@ -319,34 +320,35 @@ class RoomEditor(ar.View):
     def on_save_click(self, event):
         """Сохранение уровня в файл"""
         self.update_data_from_sprites()
-        save_room(self.walls_data, self.decor_data, self.functional_data, self.level_name)
+        # save_room(self.walls_data, self.decor_data, self.functional_data, self.level_name)
+        save_room(self.walls_data, self.decor_data, self.level_name)
 
     def update_data_from_sprites(self):
         """Обновляет данные из спрайтов перед сохранением"""
         self.walls_data = []
         self.decor_data = []
-        self.functional_data = []
+        # self.functional_data = []
 
         for sprite in self.walls_sprites:
             self.walls_data.append({
                 "row": sprite.row,
                 "col": sprite.col,
-                "texture_id": sprite.texture_id
+                "texture": sprite.texture_id
             })
 
         for sprite in self.decor_sprites:
             self.decor_data.append({
                 "row": sprite.row,
                 "col": sprite.col,
-                "texture_id": sprite.texture_id
+                "texture": sprite.texture_id
             })
 
-        for sprite in self.functional_sprites:
-            self.functional_data.append({
-                "row": sprite.row,
-                "col": sprite.col,
-                "texture_id": sprite.texture_id
-            })
+        # for sprite in self.functional_sprites:
+        #     self.functional_data.append({
+        #         "row": sprite.row,
+        #         "col": sprite.col,
+        #         "texture_id": sprite.texture_id
+        #     })
 
     def on_mouse_press(self, x, y, button, modifiers):
         if not self.is_mouse_in_grid(x, y):
@@ -384,19 +386,19 @@ class RoomEditor(ar.View):
 
         if self.selected_tool == "walls":
             # Проверяет функциональные объекты
-            for sprite in self.functional_sprites:
-                if sprite.row == row and sprite.col == col:
-                    return
+            # for sprite in self.functional_sprites:
+            #     if sprite.row == row and sprite.col == col:
+            #         return
             # Удаляет существующую стену в этой клетке
             self.remove_existing_object(row, col, self.walls_sprites)
 
-        elif self.selected_tool == "functional_objects":
-            # Проверяет стены
-            for sprite in self.walls_sprites:
-                if sprite.row == row and sprite.col == col:
-                    return
-            # Удаляет существующий функциональный объект
-            self.remove_existing_object(row, col, self.functional_sprites)
+        # elif self.selected_tool == "functional_objects":
+        #     # Проверяет стены
+        #     for sprite in self.walls_sprites:
+        #         if sprite.row == row and sprite.col == col:
+        #             return
+        #     # Удаляет существующий функциональный объект
+        #     self.remove_existing_object(row, col, self.functional_sprites)
 
         elif self.selected_tool == "decor":
             # Декор можно размещать где угодно, просто удаляет существующий
@@ -423,8 +425,8 @@ class RoomEditor(ar.View):
             self.walls_sprites.append(sprite)
         elif self.selected_tool == "decor":
             self.decor_sprites.append(sprite)
-        elif self.selected_tool == "functional_objects":
-            self.functional_sprites.append(sprite)
+        # elif self.selected_tool == "functional_objects":
+        #     self.functional_sprites.append(sprite)
 
     def remove_existing_object(self, row, col, sprite_list):
         """Удаляет существующий объект из списка спрайтов"""
@@ -438,7 +440,7 @@ class RoomEditor(ar.View):
         """Удаление объекта из указанной клетки"""
         self.remove_existing_object(row, col, self.walls_sprites)
         self.remove_existing_object(row, col, self.decor_sprites)
-        self.remove_existing_object(row, col, self.functional_sprites)
+        # self.remove_existing_object(row, col, self.functional_sprites)
 
     def on_back_click(self, event):
         self.window.close()

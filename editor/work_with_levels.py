@@ -37,19 +37,20 @@ def load_level(level_name):
 
         walls = level_data.get("walls", [])
         decor = level_data.get("decor", [])
-        functional_objects = level_data.get("functional_objects", [])
+        # functional_objects = level_data.get("functional_objects", [])
     else:
         walls = []
         decor = []
-        functional_objects = []
+        # functional_objects = []
 
-    return walls, decor, functional_objects
+    return walls, decor
 
-def save_room(walls, decor, functional_objects, level_name):
+def save_room(walls, decor, level_name):
     level_data = {
         "walls": walls,
         "decor": decor,
-        "functional_objects": functional_objects
+        # "functional_objects": functional_objects
+        "background": "back"
     }
     path = os.path.join(levels_folder, level_name)
     with open(path, "w", encoding="utf-8") as f:
