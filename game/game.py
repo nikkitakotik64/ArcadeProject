@@ -146,11 +146,11 @@ class Game(ar.Window):
                     ar.play_sound(weapons_sounds[self.first_player_weapon])
                 if isinstance(self.player.get_weapon(), Shotgun):
                     for x, y, bullet_characteristics, angle in bullets:
-                        bullet = ShotgunBullet(x, y, bullet_characteristics, angle, self.k / 12, [self.player_sprite])
+                        bullet = ShotgunBullet(x, y, bullet_characteristics, angle, self.k / 12, [self.player])
                         self.bullets.append(bullet)
                 else:
                     for x, y, bullet_characteristics, angle in bullets:
-                        bullet = Bullet(x, y, bullet_characteristics, angle, self.k / 12, [self.player_sprite])
+                        bullet = Bullet(x, y, bullet_characteristics, angle, self.k / 12, [self.player])
                         self.bullets.append(bullet)
 
         if EventsID.reload in self.events:
@@ -279,6 +279,7 @@ class PvP(Game):
             self.second_player_weapon_mode = second_player_weapon
             self.second_player_weapon = second_player_weapon
         super().__init__(self.first_player_weapon)
+        self.level = level
         if level == 'Random':
             pass
         elif level == 'Random_standard':
@@ -340,6 +341,20 @@ class PvP(Game):
         else:
             self.second_player_weapon = self.second_player_weapon_mode
         super().restart(self.first_player_weapon)
+        level = self.level
+        if level == 'Random':
+            pass
+        elif level == 'Random_standard':
+            pass
+        elif level == 'Random_editor':
+            pass
+        level = data.load_level(level)
+        for wall in level['walls']:
+            r, c, txt = wall['row'], wall['col'], wall['texture_id']
+            self.wall_list.append(Wall(txt, self.k / 8, r, c))
+        for dec in level['decor']:
+            r, c, txt = dec['row'], dec['col'], dec['texture_id']
+            self.decor.append(Decor(txt, self.k / 8, r, c))
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
                                     data.FILES['player_laying'], self.k / 6, 1, 12,
                                     weapons_dict[self.second_player_weapon](), is_second=True)
@@ -392,11 +407,11 @@ class PvP(Game):
                 if isinstance(self.second_player.get_weapon(), Shotgun):
                     for x, y, bullet_characteristics, angle in bullets:
                         bullet = ShotgunBullet(x, y, bullet_characteristics, angle, self.k / 12,
-                                               [self.second_player_sprite])
+                                               [self.second_player])
                         self.bullets.append(bullet)
                 else:
                     for x, y, bullet_characteristics, angle in bullets:
-                        bullet = Bullet(x, y, bullet_characteristics, angle, self.k / 12, [self.second_player_sprite])
+                        bullet = Bullet(x, y, bullet_characteristics, angle, self.k / 12, [self.second_player])
                         self.bullets.append(bullet)
 
         if EventsID.sec_reload in self.events:
@@ -445,7 +460,7 @@ class PvP(Game):
         for sprite in sprites:
             bullets = ar.check_for_collision_with_list(sprite, self.bullets)
             for bullet in bullets:
-                if sprite in bullet.get_exceptions():
+                if sprite in map(lambda el: el.get_sprite(), bullet.get_exceptions()):
                     continue
                 sprite.damage(bullet.get_damage())
                 self.bullets.remove(bullet)
