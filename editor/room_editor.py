@@ -1,7 +1,7 @@
 import arcade as ar
 import arcade.gui
 
-from work_with_levels import *
+from editor.work_with_levels import *
 from data.savings import data
 
 SCREEN_WIDTH = 1400

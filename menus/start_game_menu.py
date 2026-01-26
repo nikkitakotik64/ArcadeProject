@@ -163,6 +163,8 @@ class StartGameMenu(ar.Window):
         self.close(False)
         first_player = self.first_dropdown.value
         second_player = self.second_dropdown.value
+        # TODO: delete it
+        self.random = 3
         match self.random:
             case 0:
                 level = 'Random'
@@ -171,7 +173,7 @@ class StartGameMenu(ar.Window):
             case 2:
                 level = 'Random_editor'
             case 3:
-                level = ''  # TODO
+                level = data.LEVELS['somt']  # TODO
         self.stop = True
         restart.set_false()
         game = Game(first_player, second_player, self.same, level, restart)

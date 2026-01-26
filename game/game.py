@@ -4,6 +4,8 @@ from sprites.player import PlayerStatus
 from data.savings import data
 from screen import *
 import arcade as ar
+from sprites.decor import Decor
+from sprites.wall import Wall
 from sprites.world_wall import WorldWall
 from sprites.player import Player
 from game_types import Direction
@@ -275,6 +277,20 @@ class PvP(Game):
             self.second_player_weapon_mode = second_player_weapon
             self.second_player_weapon = second_player_weapon
         super().__init__(self.first_player_weapon)
+        if level == 'Random':
+            pass
+        elif level == 'Random_standard':
+            pass
+        elif level == 'Random_editor':
+            pass
+        level = data.load_level(level)
+        for wall in level['walls']:
+            r, c, txt = wall['row'], wall['col'], wall['texture_id']
+            self.wall_list.append(Wall(txt, self.k / 8, r, c))
+        for dec in level['decor']:
+            r, c, txt = dec['row'], dec['col'], dec['texture_id']
+            self.decor.append(Decor(txt, self.k / 8, r, c))
+
         if game_settings['sounds']:
             self.sound_button = ar.Sprite(data.FILES['sound_button_game_enabled'], self.k / 2.5)
         else:
@@ -307,7 +323,7 @@ class PvP(Game):
         self.end_buttons.append(self.back_button)
         self.change_weapon_button = ar.Sprite(data.FILES['change_weapon_button'], self.k)
         self.change_weapon_button.center_x, self.change_weapon_button.center_y = (W_OUTLINE + WIDTH / 2,
-                                                                                  H_OUTLINE + HEIGHT / 2)
+                                                                                  H_OUTLINE + HEIGHT / 3)
         self.end_buttons.append(self.change_weapon_button)
 
     def restart(self, **kwargs) -> None:
@@ -384,11 +400,11 @@ class PvP(Game):
 
     def on_draw(self) -> None:
         self.clear()
-        self.player_list.draw()
-        self.second_player_list.draw()
         self.bullets.draw()
         self.wall_list.draw()
-        self.functional_objects.draw()
+        self.decor.draw()
+        self.player_list.draw()
+        self.second_player_list.draw()
         ar.draw_text('HP: ' + str(round(self.player.get_hp())), 16 * self.k, self.height - 16 * self.k, ar.color.RED,
                      12 * self.k)
         ar.draw_text('Weapon: ' + self.first_player_weapon, 16 * self.k, self.height - 40 * self.k, ar.color.RED,

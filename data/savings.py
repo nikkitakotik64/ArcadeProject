@@ -47,7 +47,7 @@ class Data:
     }
 
     LEVELS = {
-        -1: levels_folder + '/test.level',
+        'somt': 'C:/Users/Сергей/PycharmProjects\ArcadeProject\editor/editor_levels/Test_Level.level',
     }
 
     def __init__(self) -> None:
@@ -59,10 +59,25 @@ class Data:
     def save(self) -> None:
         pass
 
-    def get_level_info(self, level_id: int):
-        with open(self.LEVELS[level_id], 'r') as file:
-            level = json.loads(file.read())
-            return level
+    @staticmethod
+    def check_level(level: str) -> bool:
+        try:
+            with open(level) as file:
+                js = json.loads(file.read())
+            walls, decor = js['walls'], js['decor']
+            for wall in walls:
+                _ = wall['row'], wall['col'], wall['texture_id']
+            for dec in decor:
+                _ = dec['row'], dec['col'], dec['texture_id']
+            return True
+        except:
+            return False
+
+    @staticmethod
+    def load_level(level: str):
+        with open(level) as file:
+            js = json.loads(file.read())
+            return js
 
     def get_sound_settings(self) -> bool:
         try:
