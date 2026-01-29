@@ -444,10 +444,14 @@ class PvP(Game):
                      12 * self.k)
         ar.draw_text('Weapon: ' + self.first_player_weapon, 16 * self.k, self.height - 40 * self.k, ar.color.RED,
                      12 * self.k)
+        ar.draw_text('Ammo: ' + str(self.player.get_ammo()) + '/' + str(self.player.get_max_ammo()), 16 * self.k,
+                     self.height - 64 * self.k, ar.color.RED, 12 * self.k)
         ar.draw_text('HP: ' + str(round(self.second_player.get_hp())), self.width - 160 * self.k,
                      self.height - 16 * self.k, ar.color.RED, 12 * self.k)
         ar.draw_text('Weapon: ' + self.second_player_weapon, self.width - 160 * self.k,
                      self.height - 40 * self.k, ar.color.RED, 12 * self.k)
+        ar.draw_text('Ammo: ' + str(self.second_player.get_ammo()) + '/' + str(self.second_player.get_max_ammo()),
+                     self.width - 160 * self.k, self.height - 64 * self.k, ar.color.RED, 12 * self.k)
         if self.status == GameStatus.paused:
             self.label.draw()
             ar.draw_text('PAUSE', self.center_x - 40 * self.k, self.height - 128 * self.k, ar.color.RED, 24 * self.k)

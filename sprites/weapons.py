@@ -47,6 +47,12 @@ class Weapon:
         self.reloading_time = reloading_time
         self.bullet_characteristics = BulletCharacteristics(damage, normal_range, armor_piercing, bullet_speed)
 
+    def get_ammo(self) -> int:
+        return self.now_ammo
+
+    def get_max_ammo(self) -> int:
+        return self.count_of_ammo
+
     def can_shoot(self) -> bool:
         if self.status == WeaponStatus.reloading or self.status == WeaponStatus.shooting:
             return False
@@ -184,6 +190,12 @@ class Shotgun(Weapon):
         super().__init__(count_of_ammo * count_of_pierces, damage / count_of_pierces, normal_range,
                          armor_piercing, spread_angle, rate_of_fire, reloading_time, bullet_speed)
         self.count_of_pierces = count_of_pierces
+
+    def get_ammo(self) -> int:
+        return self.now_ammo // self.count_of_pierces
+
+    def get_max_ammo(self) -> int:
+        return self.count_of_ammo // self.count_of_pierces
 
     def shoot(self, direction: Direction) -> list[tuple[BulletCharacteristics, float]]:
         bullets = []

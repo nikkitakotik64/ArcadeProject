@@ -46,6 +46,12 @@ class Player:
         self.is_second = is_second
         self.hp = 200
 
+    def get_ammo(self) -> int:
+        return self.weapon.get_ammo()
+
+    def get_max_ammo(self) -> int:
+        return self.weapon.get_max_ammo()
+
     def get_weapon(self) -> Weapon:
         return self.weapon
 
