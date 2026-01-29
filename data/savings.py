@@ -51,6 +51,10 @@ class Data:
         'paradigm_button': image_folder + '/paradigm_button.png',
         'battle_button': image_folder + '/battle_button.png',
         'room_button': image_folder + '/room_button.png',
+        'editor_levels_button': image_folder + '/editor_levels_button.png',
+        'button': image_folder + '/button.png',
+        'next_button': image_folder + '/next_button.png',
+        'prev_button': image_folder + '/prev_button.png',
     }
 
     LEVELS = {
@@ -108,8 +112,9 @@ class Data:
         except:
             return False
 
-    def load_editor_level(self, level: str) -> str:
-        return self.load_level(editor_levels_folder + '/' + level)
+    @staticmethod
+    def get_editor_level_path(level: str) -> str:
+        return editor_levels_folder + '/' + level
 
     @staticmethod
     def load_level(level: str) -> str:
