@@ -73,9 +73,14 @@ class Player:
                 self.sprite = PlayerSprite(self.texture_siting_left, self.scale, self.hp)
                 self.sprite.center_x, self.sprite.bottom = center_x, bottom
         elif status == PlayerStatus.laying:
-            center_x, bottom = self.sprite.center_x, self.sprite.bottom
-            self.sprite = PlayerSprite(self.texture_laying, self.scale, self.hp)
-            self.sprite.center_x, self.sprite.bottom = center_x, bottom
+            if direction == Direction.right:
+                center_x, bottom = self.sprite.center_x, self.sprite.bottom
+                self.sprite = PlayerSprite(self.texture_laying, self.scale, self.hp)
+                self.sprite.center_x, self.sprite.bottom = center_x, bottom
+            else:
+                center_x, bottom = self.sprite.center_x, self.sprite.bottom
+                self.sprite = PlayerSprite(self.texture_laying_left, self.scale, self.hp)
+                self.sprite.center_x, self.sprite.bottom = center_x, bottom
         else:
             if direction == Direction.right:
                 center_x, bottom = self.sprite.center_x, self.sprite.bottom
@@ -147,6 +152,7 @@ class Player:
         return bullets
 
     def on_update(self, delta_time: float) -> None:
+        self.hp = self.sprite.get_hp()
         self.weapon.on_update(delta_time)
 
     def reload(self) -> None:
