@@ -2,10 +2,11 @@ import arcade as ar
 import arcade.gui as gui
 from main import game_settings
 from data.savings import data
-from screen import CELL_SIDE, W_OUTLINE, WIDTH, H_OUTLINE, HEIGHT
+from screen import CELL_SIDE, W_OUTLINE, WIDTH, H_OUTLINE, HEIGHT, H
 from sprites.weapons import weapons_list
 from game.game import PvP as Game
 from game_types import Running
+from enum import Enum
 
 restart = Running()
 
@@ -63,6 +64,12 @@ def create_tool_section(title: str, options: list[str], x: int, y: int, width: i
     return section, dropdown
 
 
+class StartGameMenuModes(Enum):
+    normal = 0
+    level_changing = 1
+    editor_levels_change = 2
+
+
 class StartGameMenu(ar.Window):
     random_button_all = ar.Sprite(data.FILES['random_button_all'], CELL_SIDE / 40)
     random_button_editor = ar.Sprite(data.FILES['random_button_editor'], CELL_SIDE / 40)
@@ -75,10 +82,11 @@ class StartGameMenu(ar.Window):
         self.k = CELL_SIDE / 16
         self.stop = False
         super().__init__(1, 1, 'Game', fullscreen=True)
-        self.editor_levels = ['level hz']  # TODO
+        self.editor_levels = list()  # TODO
         ar.set_background_color(ar.color.DARK_RED)
         self.buttons = ar.SpriteList()
-        self.changing = [False, False]
+        self.mode = StartGameMenuModes.normal
+        self.page = 0
 
         self.start_button = ar.Sprite(data.FILES['start_button'], self.k)
         self.start_button.center_x = WIDTH / 2 + W_OUTLINE
@@ -96,6 +104,33 @@ class StartGameMenu(ar.Window):
         self.random_button.center_x = WIDTH / 2 + W_OUTLINE
         self.random_button.center_y = HEIGHT / 2 + H_OUTLINE
         self.buttons.append(self.random_button)
+
+        self.level = data.LEVELS['Creator']
+        self.level_button = ar.Sprite(data.FILES['level_button'], self.k)
+        self.level_button.center_x = WIDTH / 2 + W_OUTLINE
+        self.level_button.center_y = H - H_OUTLINE - 1.2 * HEIGHT / 5
+        self.buttons.append(self.level_button)
+
+        self.level_change_buttons = ar.SpriteList()
+        self.creator_button = ar.Sprite(data.FILES['creator_button'], self.k)
+        self.creator_button.center_x = WIDTH / 4 + W_OUTLINE
+        self.creator_button.center_y = 3 * HEIGHT / 4 + H_OUTLINE
+        self.level_change_buttons.append(self.creator_button)
+
+        self.paradigm_button = ar.Sprite(data.FILES['paradigm_button'], self.k)
+        self.paradigm_button.center_x = 3 * WIDTH / 4 + W_OUTLINE
+        self.paradigm_button.center_y = 3 * HEIGHT / 4 + H_OUTLINE
+        self.level_change_buttons.append(self.paradigm_button)
+
+        self.battle_button = ar.Sprite(data.FILES['battle_button'], self.k)
+        self.battle_button.center_x = WIDTH / 4 + W_OUTLINE
+        self.battle_button.center_y = HEIGHT / 2 + H_OUTLINE
+        self.level_change_buttons.append(self.battle_button)
+
+        self.editor_button = ar.Sprite(data.FILES['editor_button'], self.k)
+        self.editor_button.center_x = WIDTH / 2 + W_OUTLINE
+        self.editor_button.center_y = HEIGHT / 4 + H_OUTLINE
+        self.level_change_buttons.append(self.editor_button)
 
         first_player_selection, self.first_dropdown = create_tool_section('First player', ['Random'] + weapons_list,
                                                                           W_OUTLINE + WIDTH / 8 - 128 * self.k / 2,
@@ -150,10 +185,14 @@ class StartGameMenu(ar.Window):
 
     def on_draw(self) -> None:
         self.clear()
-        self.buttons.draw()
-        self.manager.draw()
-        self.manager1.draw()
-        self.manager2.draw()
+        match self.mode:
+            case StartGameMenuModes.normal:
+                self.buttons.draw()
+                self.manager.draw()
+                self.manager1.draw()
+                self.manager2.draw()
+            case StartGameMenuModes.level_changing:
+                self.level_change_buttons.draw()
 
     def on_key_press(self, key: int, _: int) -> None:
         if key == ar.key.ESCAPE:
@@ -163,8 +202,8 @@ class StartGameMenu(ar.Window):
         self.close(False)
         first_player = self.first_dropdown.value
         second_player = self.second_dropdown.value
-        # TODO: delete it
-        self.random = 3
+
+        level = self.level
         match self.random:
             case 0:
                 level = 'Random'
@@ -172,8 +211,6 @@ class StartGameMenu(ar.Window):
                 level = 'Random_standard'
             case 2:
                 level = 'Random_editor'
-            case 3:
-                level = data.LEVELS['somt']  # TODO
         self.stop = True
         restart.set_false()
         game = Game(first_player, second_player, self.same, level, restart)
@@ -186,7 +223,7 @@ class StartGameMenu(ar.Window):
         else:
             self.same_button.texture = self.same_button_disabled.texture
 
-    def click(self, x: float, y: float) -> None:
+    def normal_click(self, x: float, y: float) -> None:
         if (self.start_button.right >= x >= self.start_button.left
                 and self.start_button.top >= y >= self.start_button.bottom):
             self.start_game()
@@ -196,6 +233,13 @@ class StartGameMenu(ar.Window):
         elif (self.random_button.right >= x >= self.random_button.left
               and self.random_button.top >= y >= self.random_button.bottom):
             self.change_random()
+        elif (self.level_button.right >= x >= self.level_button.left
+              and self.level_button.top >= y >= self.level_button.bottom):
+            self.change_level()
+
+    def change_level(self) -> None:
+        if self.random == 3:
+            self.mode = StartGameMenuModes.level_changing
 
     def change_random(self) -> None:
         self.random += 1
@@ -213,6 +257,25 @@ class StartGameMenu(ar.Window):
             case 3:
                 self.random_button.texture = self.random_button_disabled.texture
 
+    def level_click(self, x: float, y: float) -> None:
+        self.mode = StartGameMenuModes.normal
+        if (self.creator_button.right >= x >= self.creator_button.left
+                and self.creator_button.top >= y >= self.creator_button.bottom):
+            self.level = data.LEVELS['Creator']
+        elif (self.paradigm_button.right >= x >= self.paradigm_button.left
+              and self.paradigm_button.top >= y >= self.paradigm_button.bottom):
+            self.level = data.LEVELS['Paradigm']
+        elif (self.battle_button.right >= x >= self.battle_button.left
+              and self.battle_button.top >= y >= self.battle_button.bottom):
+            self.level = data.LEVELS['Battle Of Everything']
+        elif (self.editor_button.right >= x >= self.editor_button.left
+              and self.editor_button.top >= y >= self.editor_button.bottom):
+            self.mode = StartGameMenuModes.editor_levels_change
+
     def on_mouse_press(self, x: int, y: int, button: int, _: int) -> None:
         if button == ar.MOUSE_BUTTON_LEFT:
-            self.click(x, y)
+            match self.mode:
+                case StartGameMenuModes.normal:
+                    self.normal_click(x, y)
+                case StartGameMenuModes.level_changing:
+                    self.level_click(x, y)

@@ -49,7 +49,7 @@ class Game(ar.Window):
         self.enemies = ar.SpriteList()
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                             data.FILES['player_laying'], self.k / 6, 1, 10,
+                             data.FILES['player_laying'], self.k / 6, 1, 0,
                              weapons_dict[first_player_weapon]())
         self.player_sprite = self.player.get_sprite()
         self.player_list = ar.SpriteList()
@@ -81,7 +81,7 @@ class Game(ar.Window):
         self.bullets = ar.SpriteList()
 
         self.player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                             data.FILES['player_laying'], self.k / 6, 1, 10,
+                             data.FILES['player_laying'], self.k / 6, 1, 0,
                              weapons_dict[first_player_weapon]())
         self.player_sprite = self.player.get_sprite()
         self.player_list = ar.SpriteList()
@@ -281,17 +281,19 @@ class PvP(Game):
         super().__init__(self.first_player_weapon)
         self.level = level
         if level == 'Random':
-            pass
+            editor_levels = data.get_levels_list()
+            level = choice(list(data.LEVELS.values()) + editor_levels)
         elif level == 'Random_standard':
-            pass
+            level = choice(list(data.LEVELS.values()))
         elif level == 'Random_editor':
-            pass
+            editor_levels = data.get_levels_list()
+            level = choice(editor_levels)
         level = data.load_level(level)
         for wall in level['walls']:
-            r, c, txt = wall['row'], wall['col'], wall['texture_id']
+            r, c, txt = wall['row'], wall['col'], wall['texture']
             self.wall_list.append(Wall(txt, self.k / 8, r, c))
         for dec in level['decor']:
-            r, c, txt = dec['row'], dec['col'], dec['texture_id']
+            r, c, txt = dec['row'], dec['col'], dec['texture']
             self.decor.append(Decor(txt, self.k / 8, r, c))
 
         if game_settings['sounds']:
@@ -302,7 +304,7 @@ class PvP(Game):
         self.sound_button.center_y = H - CELL_SIDE * 2
         self.is_restart = restart
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                                    data.FILES['player_laying'], self.k / 6, 1, 12,
+                                    data.FILES['player_laying'], self.k / 6, 1, 47,
                                     weapons_dict[self.second_player_weapon](), is_second=True)
         self.second_player_sprite = self.second_player.get_sprite()
         self.second_player_list = ar.SpriteList()
@@ -343,20 +345,22 @@ class PvP(Game):
         super().restart(self.first_player_weapon)
         level = self.level
         if level == 'Random':
-            pass
+            editor_levels = data.get_levels_list()
+            level = choice(list(data.LEVELS.values()) + editor_levels)
         elif level == 'Random_standard':
-            pass
+            level = choice(list(data.LEVELS.values()))
         elif level == 'Random_editor':
-            pass
+            editor_levels = data.get_levels_list()
+            level = choice(editor_levels)
         level = data.load_level(level)
         for wall in level['walls']:
-            r, c, txt = wall['row'], wall['col'], wall['texture_id']
+            r, c, txt = wall['row'], wall['col'], wall['texture']
             self.wall_list.append(Wall(txt, self.k / 8, r, c))
         for dec in level['decor']:
-            r, c, txt = dec['row'], dec['col'], dec['texture_id']
+            r, c, txt = dec['row'], dec['col'], dec['texture']
             self.decor.append(Decor(txt, self.k / 8, r, c))
         self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                                    data.FILES['player_laying'], self.k / 6, 1, 12,
+                                    data.FILES['player_laying'], self.k / 6, 1, 47,
                                     weapons_dict[self.second_player_weapon](), is_second=True)
         self.second_player_sprite = self.second_player.get_sprite()
         self.second_player_list = ar.SpriteList()

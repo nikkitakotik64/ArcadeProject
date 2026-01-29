@@ -1,5 +1,6 @@
 import os
 import json
+from editor.work_with_levels import levels_folder as editor_levels_folder
 
 data_folder = os.path.dirname(__file__)
 image_folder = data_folder + '/images'
@@ -45,10 +46,16 @@ class Data:
         'sound_button_game_disabled': image_folder + '/sound_button_game_disabled.png',
         'change_weapon_button': image_folder + '/change_weapon_button.png',
         'restart_button': image_folder + '/restart_button.png',
+        'level_button': image_folder + '/level_button.png',
+        'creator_button': image_folder + '/creator_button.png',
+        'paradigm_button': image_folder + '/paradigm_button.png',
+        'battle_button': image_folder + '/battle_button.png',
     }
 
     LEVELS = {
-        'somt': 'C:/Users/Сергей/PycharmProjects\ArcadeProject\editor/editor_levels/Test_Level.level',
+        'Battle Of Everything': levels_folder + '/Battle Of Everything',
+        'Paradigm': levels_folder + '/Paradigm',
+        'Creator': levels_folder + '/Creator',
     }
 
     SOUNDS = {
@@ -90,20 +97,35 @@ class Data:
         try:
             with open(level) as file:
                 js = json.loads(file.read())
-            walls, decor = js['walls'], js['decor']
+            walls, decor, _ = js['walls'], js['decor'], js['background']
             for wall in walls:
-                _ = wall['row'], wall['col'], wall['texture_id']
+                _ = wall['row'], wall['col'], wall['texture']
             for dec in decor:
-                _ = dec['row'], dec['col'], dec['texture_id']
+                _ = dec['row'], dec['col'], dec['texture']
             return True
         except:
             return False
 
     @staticmethod
     def load_level(level: str):
-        with open(level) as file:
+        with open(level + '.level') as file:
             js = json.loads(file.read())
             return js
+
+    def get_levels_list(self) -> list[str]:
+        files = os.listdir(editor_levels_folder)
+        levels = list()
+        for name in files:
+            if name.endswith('.level') and self.check_level(name):
+                levels.append(name)
+        return levels
+
+    def check_levels(self, levels: list[str]) -> list[str]:
+        new_levels = list()
+        for level in levels:
+            if self.check_level(level):
+                new_levels.append(level)
+        return new_levels
 
     def get_sound_settings(self) -> bool:
         try:
