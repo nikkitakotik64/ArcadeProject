@@ -117,14 +117,18 @@ class Game(ar.Window):
                 self.player_sprite.change_x = 0
             else:
                 self.player.set_direction(Direction.left)
-                if self.player.get_status() == PlayerStatus.siting:
-                    self.player_sprite.change_x = -consts.SITING_SPEED * self.k
-                elif self.player.get_status() != PlayerStatus.laying:
-                    self.player_sprite.change_x = -consts.SPEED * self.k
+            if self.player.get_status() == PlayerStatus.siting:
+                self.player_sprite.change_x = -consts.SITING_SPEED * self.k
+            elif self.player.get_status() == PlayerStatus.laying:
+                self.player_sprite.change_x = -consts.LAYING_SPEED * self.k
+            elif self.player.get_status() != PlayerStatus.laying:
+                self.player_sprite.change_x = -consts.SPEED * self.k
         elif EventsID.right in self.events:
             self.player.set_direction(Direction.right)
             if self.player.get_status() == PlayerStatus.siting:
                 self.player_sprite.change_x = consts.SITING_SPEED * self.k
+            elif self.player.get_status() == PlayerStatus.laying:
+                self.player_sprite.change_x = consts.LAYING_SPEED * self.k
             elif self.player.get_status() != PlayerStatus.laying:
                 self.player_sprite.change_x = consts.SPEED * self.k
         else:
@@ -198,6 +202,10 @@ class Game(ar.Window):
             data.save()
         else:
             self.data_timer -= delta_time
+
+        if (self.player_sprite.left < 0 or self.player_sprite.right > W
+                or self.player_sprite.top > H or self.player_sprite.bottom < 0):
+            self.player_sprite.damage(200)
 
     def pause(self) -> None:
         self.status = GameStatus.paused
@@ -382,14 +390,18 @@ class PvP(Game):
                 self.second_player_sprite.change_x = 0
             else:
                 self.second_player.set_direction(Direction.left)
-                if self.second_player.get_status() == PlayerStatus.siting:
-                    self.second_player_sprite.change_x = -consts.SITING_SPEED * self.k
-                elif self.second_player.get_status() != PlayerStatus.laying:
-                    self.second_player_sprite.change_x = -consts.SPEED * self.k
+            if self.second_player.get_status() == PlayerStatus.siting:
+                self.second_player_sprite.change_x = -consts.SITING_SPEED * self.k
+            elif self.second_player.get_status() == PlayerStatus.laying:
+                self.second_player_sprite.change_x = -consts.LAYING_SPEED * self.k
+            elif self.second_player.get_status() != PlayerStatus.laying:
+                self.second_player_sprite.change_x = -consts.SPEED * self.k
         elif EventsID.sec_right in self.events:
             self.second_player.set_direction(Direction.right)
             if self.second_player.get_status() == PlayerStatus.siting:
                 self.second_player_sprite.change_x = consts.SITING_SPEED * self.k
+            elif self.second_player.get_status() == PlayerStatus.laying:
+                self.second_player_sprite.change_x = consts.LAYING_SPEED * self.k
             elif self.second_player.get_status() != PlayerStatus.laying:
                 self.second_player_sprite.change_x = consts.SPEED * self.k
         else:
@@ -497,6 +509,16 @@ class PvP(Game):
             data.save()
         else:
             self.data_timer -= delta_time
+
+        if (self.player_sprite.left < 0 or self.player_sprite.right > W
+                or self.player_sprite.top > H or self.player_sprite.bottom < 0):
+            self.player_sprite.damage(200)
+            self.status = GameStatus.ended
+
+        if (self.second_player_sprite.left < 0 or self.second_player_sprite.right > W
+                or self.second_player_sprite.top > H or self.second_player_sprite.bottom < 0):
+            self.second_player_sprite.damage(200)
+            self.status = GameStatus.ended
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         super().on_key_press(key, modifiers)

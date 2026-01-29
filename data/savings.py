@@ -50,12 +50,14 @@ class Data:
         'creator_button': image_folder + '/creator_button.png',
         'paradigm_button': image_folder + '/paradigm_button.png',
         'battle_button': image_folder + '/battle_button.png',
+        'room_button': image_folder + '/room_button.png',
     }
 
     LEVELS = {
         'Battle Of Everything': levels_folder + '/Battle Of Everything',
         'Paradigm': levels_folder + '/Paradigm',
         'Creator': levels_folder + '/Creator',
+        'Room': levels_folder + '/Room',
     }
 
     SOUNDS = {
@@ -95,7 +97,7 @@ class Data:
     @staticmethod
     def check_level(level: str) -> bool:
         try:
-            with open(level) as file:
+            with open(editor_levels_folder + '/' + level) as file:
                 js = json.loads(file.read())
             walls, decor, _ = js['walls'], js['decor'], js['background']
             for wall in walls:
@@ -106,8 +108,11 @@ class Data:
         except:
             return False
 
+    def load_editor_level(self, level: str) -> str:
+        return self.load_level(editor_levels_folder + '/' + level)
+
     @staticmethod
-    def load_level(level: str):
+    def load_level(level: str) -> str:
         with open(level + '.level') as file:
             js = json.loads(file.read())
             return js
@@ -116,8 +121,8 @@ class Data:
         files = os.listdir(editor_levels_folder)
         levels = list()
         for name in files:
-            if name.endswith('.level') and self.check_level(name):
-                levels.append(name)
+            if name.endswith('.level') and self.check_level(name) and not name == 'Test_Level.level':
+                levels.append(name[:-6])
         return levels
 
     def check_levels(self, levels: list[str]) -> list[str]:

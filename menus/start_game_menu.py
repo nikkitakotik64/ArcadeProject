@@ -82,7 +82,7 @@ class StartGameMenu(ar.Window):
         self.k = CELL_SIDE / 16
         self.stop = False
         super().__init__(1, 1, 'Game', fullscreen=True)
-        self.editor_levels = list()  # TODO
+        self.editor_levels = data.get_levels_list()
         ar.set_background_color(ar.color.DARK_RED)
         self.buttons = ar.SpriteList()
         self.mode = StartGameMenuModes.normal
@@ -126,6 +126,11 @@ class StartGameMenu(ar.Window):
         self.battle_button.center_x = WIDTH / 4 + W_OUTLINE
         self.battle_button.center_y = HEIGHT / 2 + H_OUTLINE
         self.level_change_buttons.append(self.battle_button)
+
+        self.room_button = ar.Sprite(data.FILES['room_button'], self.k)
+        self.room_button.center_x = 3 * WIDTH / 4 + W_OUTLINE
+        self.room_button.center_y = HEIGHT / 2 + H_OUTLINE
+        self.level_change_buttons.append(self.room_button)
 
         self.editor_button = ar.Sprite(data.FILES['editor_button'], self.k)
         self.editor_button.center_x = WIDTH / 2 + W_OUTLINE
@@ -268,6 +273,9 @@ class StartGameMenu(ar.Window):
         elif (self.battle_button.right >= x >= self.battle_button.left
               and self.battle_button.top >= y >= self.battle_button.bottom):
             self.level = data.LEVELS['Battle Of Everything']
+        elif (self.room_button.right >= x >= self.room_button.left
+              and self.room_button.top >= y >= self.room_button.bottom):
+            self.level = data.LEVELS['Room']
         elif (self.editor_button.right >= x >= self.editor_button.left
               and self.editor_button.top >= y >= self.editor_button.bottom):
             self.mode = StartGameMenuModes.editor_levels_change
