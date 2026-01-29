@@ -19,7 +19,6 @@ class Data:
         'torch': image_folder + '/torch.png',
         'tree': image_folder + '/tree.png',
         'vase': image_folder + '/vase.png',
-        'door': image_folder + '/door.png',
         'chest': image_folder + '/chest.png',
         'data': data_folder + '/data.game',
         'hor_world_wall': image_folder + '/hor_world_wall.png',
