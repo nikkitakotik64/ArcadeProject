@@ -14,6 +14,9 @@ class Data:
         'player_staying': image_folder + '/player.png',
         'player_siting': image_folder + '/sit.png',
         'player_laying': image_folder + '/lay.png',
+        'sec_player_staying': image_folder + '/sec_player.png',
+        'sec_player_siting': image_folder + '/sec_sit.png',
+        'sec_player_laying': image_folder + '/sec_lay.png',
         'wall-1': image_folder + '/wall.png',  # тестовая стена без текстуры, станет кирпичной!
         'wall-2': image_folder + '/wall2.png', # будет металлическая(если будет)
         'torch': image_folder + '/torch.png',

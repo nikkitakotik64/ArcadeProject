@@ -311,8 +311,8 @@ class PvP(Game):
         self.sound_button.center_x = W - CELL_SIDE * 2
         self.sound_button.center_y = H - CELL_SIDE * 2
         self.is_restart = restart
-        self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                                    data.FILES['player_laying'], self.k / 6, 1, 47,
+        self.second_player = Player(self, data.FILES['sec_player_staying'], data.FILES['sec_player_siting'],
+                                    data.FILES['sec_player_laying'], self.k / 6, 1, 47,
                                     weapons_dict[self.second_player_weapon](), is_second=True)
         self.second_player_sprite = self.second_player.get_sprite()
         self.second_player_list = ar.SpriteList()
@@ -367,8 +367,8 @@ class PvP(Game):
         for dec in level['decor']:
             r, c, txt = dec['row'], dec['col'], dec['texture']
             self.decor.append(Decor(txt, self.k / 8, r, c))
-        self.second_player = Player(self, data.FILES['player_staying'], data.FILES['player_siting'],
-                                    data.FILES['player_laying'], self.k / 6, 1, 47,
+        self.second_player = Player(self, data.FILES['sec_player_staying'], data.FILES['sec_player_siting'],
+                                    data.FILES['sec_player_laying'], self.k / 6, 1, 47,
                                     weapons_dict[self.second_player_weapon](), is_second=True)
         self.second_player_sprite = self.second_player.get_sprite()
         self.second_player_list = ar.SpriteList()
