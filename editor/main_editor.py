@@ -12,7 +12,6 @@ SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Редактор. Работа с уровнями"
 
 
-# TODO: доделать функционал доп окна и функций, исправить баги
 class LevelMenu(ar.View):
     def __init__(self):
         super().__init__()
