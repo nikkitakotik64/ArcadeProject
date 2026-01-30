@@ -514,13 +514,14 @@ class PvP(Game):
         else:
             self.data_timer -= delta_time
 
-        if (self.player_sprite.left < 0 or self.player_sprite.right > W
-                or self.player_sprite.top > H or self.player_sprite.bottom < 0):
+        if (self.player_sprite.left < -CELL_SIDE / 2 - 10 or self.player_sprite.right > W + CELL_SIDE / 2 + 10
+                or self.player_sprite.top > H + 10 or self.player_sprite.bottom < -10):
             self.player_sprite.damage(200)
             self.status = GameStatus.ended
 
-        if (self.second_player_sprite.left < 0 or self.second_player_sprite.right > W
-                or self.second_player_sprite.top > H or self.second_player_sprite.bottom < 0):
+        if (self.second_player_sprite.left < -CELL_SIDE / 2 - 10
+                or self.second_player_sprite.right > W + CELL_SIDE / 2 + 10
+                or self.second_player_sprite.top > H + 10 or self.second_player_sprite.bottom < -10):
             self.second_player_sprite.damage(200)
             self.status = GameStatus.ended
 

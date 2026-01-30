@@ -1,7 +1,7 @@
 import arcade as ar
 import arcade.gui as gui
 from main import game_settings
-from data.savings import data, levels_folder
+from data.savings import data
 from screen import CELL_SIDE, W_OUTLINE, WIDTH, H_OUTLINE, HEIGHT, H
 from sprites.weapons import weapons_list
 from game.game import PvP as Game
@@ -30,13 +30,13 @@ def create_tool_section(title: str, options: list[str], x: int, y: int, width: i
     fnt_size = CELL_SIDE // 16 * 9
     dropdown_style = {
         "normal": gui.UIFlatButton.UIStyle(bg=ar.color.BLACK, font_color=ar.color.DARK_RED, font_size=fnt_size),
-        "hover": gui.UIFlatButton.UIStyle(bg=(80, 80, 80), font_color=ar.color.DARK_RED, font_size=fnt_size),
-        "press": gui.UIFlatButton.UIStyle(bg=(80, 80, 80), font_color=ar.color.DARK_RED, font_size=fnt_size),
+        "hover": gui.UIFlatButton.UIStyle(bg=(80, 80, 80, 255), font_color=ar.color.DARK_RED, font_size=fnt_size),
+        "press": gui.UIFlatButton.UIStyle(bg=(80, 80, 80, 255), font_color=ar.color.DARK_RED, font_size=fnt_size),
     }
     active_dropdown_style = {
         "normal": gui.UIFlatButton.UIStyle(bg=ar.color.BLACK, font_color=ar.color.RED, font_size=fnt_size),
-        "hover": gui.UIFlatButton.UIStyle(bg=(80, 80, 80), font_color=ar.color.RED, font_size=fnt_size),
-        "press": gui.UIFlatButton.UIStyle(bg=(80, 80, 80), font_color=ar.color.RED, font_size=fnt_size),
+        "hover": gui.UIFlatButton.UIStyle(bg=(80, 80, 80, 255), font_color=ar.color.RED, font_size=fnt_size),
+        "press": gui.UIFlatButton.UIStyle(bg=(80, 80, 80, 255), font_color=ar.color.RED, font_size=fnt_size),
     }
 
     dropdown = gui.UIDropdown(
