@@ -42,7 +42,7 @@ class MainMenu(ar.Window):
     def on_draw(self) -> None:
         self.clear()
         self.buttons.draw()
-        ar.draw_text('Title', W / 2 - 5 * 11 * self.k, 4 * H / 5, ar.color.BLACK, 40 * self.k)
+        ar.draw_text('Battle Of Everything', W / 2 - 20 * 10 * self.k, 4 * H / 5, ar.color.BLACK, 40 * self.k)
 
     def change_sound(self) -> None:
         game_settings['sounds'] = not game_settings['sounds']
